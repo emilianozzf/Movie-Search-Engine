@@ -21,5 +21,5 @@ int main(int argc, char* argv[]) {
 }
 
 void SayHello(long foo, long bar){
-	printf("The magic code is: %X\n", foo + bar);
+	printf("The magic word is: %X\n", foo + bar);
 }
