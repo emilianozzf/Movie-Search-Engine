@@ -3,16 +3,28 @@ To sum up, the given sorting algorithm is mush better than Bubble Sort in terms 
 ---------------------
 THE GIVEN SORTING ALGORITHM:
 ---------------------
-Large:    [2\**20 = 1048576] elements     [100663295] comparisons
-Med:      [2\**15 = 32768] elements       [1753087] comparisons
-Small:    [2\**10 = 1024] elements        [24063] comparisons
+1. Large:
+	* [2\**20 = 1048576] elements
+	* [100663295] comparisons
+2. Med:
+	* [2\**15 = 32768] elements
+	* [1753087] comparisons
+3. Small:
+	* [2\**10 = 1024] elements
+	* [24063] comparisons
 
 ---------------------
 BUBBLE SORT:
 ---------------------
-Large:    [2\**20 = 1048576] elements     [1.0995116 * 10^12] comparisons
-Med:      [2\**15 = 32768] elements       [1073741824] comparisons
-Small:    [2\**10 = 1024] elements        [1048576] comparisons
+1. Large:
+	* [2\**20 = 1048576] elements
+	* [1.0995116 * 10^12] comparisons
+2. Med:
+	* [2\**15 = 32768] elements
+	* [1073741824] comparisons
+3. Small:
+	* [2\**10 = 1024] elements
+	* [1048576] comparisons
 
 The hardest part of this assignment is to understand the given algorithm and to determine input sizes for anlysis.
 
