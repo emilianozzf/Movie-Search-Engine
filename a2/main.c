@@ -1,26 +1,31 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include "sort.h"
 
 
 int main() {
-    int const kSize = 32;
-    int arr[kSize];
+    srand(time(0));
 
-    for (int i = 0; i < kSize; i++) {
-        arr[i] = kSize - i;
+    const int kMinVal = 1;
+    const int kMaxVal = 32;
+    int arr[kMaxVal];
+
+    for (int i = 0; i < kMaxVal; i++) {
+        arr[i] = kMinVal + (rand() % (kMaxVal - kMinVal + 1));
     }
 
     printf("The unsorted array of ints: ");
-    for (int i = 0; i < kSize; i++) {
+    for (int i = 0; i < kMaxVal; i++) {
         printf("%d ", arr[i]);
     }
     printf("\n");
 
-    Sort(arr, kSize);
+    Sort(arr, kMaxVal);
 
     printf("The sorted array of ints: ");
-    for (int i = 0; i < kSize; i++) {
-    printf("%d ", arr[i]);
+    for (int i = 0; i < kMaxVal; i++) {
+        printf("%d ", arr[i]);
     }
     printf("\n");
 
