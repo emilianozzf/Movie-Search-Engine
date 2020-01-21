@@ -3,26 +3,26 @@
 
 
 int main() {
-	int size = 1048576;
-	int arr[size];
+    int const kSize = 32;
+    int arr[kSize];
 
-	for (int i = 0; i < size; i++){
-		arr[i] = size - i;
-	}
-	
-	//printf("The unsorted array of ints: ");
-	//for (int i = 0; i < size; i++) {
-	//	printf("%d ", arr[i]);
-	//}
-	//printf("\n");
-	
-	Sort(arr, size);
-	
-	//printf("The sorted array of ints: ");
-	//for (int i = 0; i < size; i++) {
-	//	printf("%d ", arr[i]);
-	//}
-	//printf("\n");
-		
-	return 0;	
+    for (int i = 0; i < kSize; i++) {
+        arr[i] = kSize - i;
+    }
+
+    printf("The unsorted array of ints: ");
+    for (int i = 0; i < kSize; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+
+    Sort(arr, kSize);
+
+    printf("The sorted array of ints: ");
+    for (int i = 0; i < kSize; i++) {
+    printf("%d ", arr[i]);
+    }
+    printf("\n");
+
+    return 0;
 }
