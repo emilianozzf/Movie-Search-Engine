@@ -1,4 +1,6 @@
-To sum up, the given sorting algorithm is mush better than Bubble Sort in terms of time complexity. In order to make my experiment more reasonable, I chose 2\**20, 2\**15, 2\**10 as input array sizes. Here are the details of my experiment.
+To sum up, the given sorting algorithm is mush better than Bubble Sort in terms of time complexity. The expected time complexity of the given sorting algorithm is n(logn)^2, while that of Bubblt Sort is n^2.
+ 
+In order to make my experiment more reasonable, I chose 2\**20, 2\**15, 2\**10 as input array sizes. Here are the details of my experiment.
 
 ---------------------
 THE GIVEN SORTING ALGORITHM:
