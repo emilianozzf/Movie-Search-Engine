@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <string.h>
 #include <time.h>
 #include "a3.h"
@@ -18,7 +19,7 @@
 //  name: a pointer to a Name
 void Big(Name *name) {
     if (name->middle == NULL) {
-    	printf("%s %s", name->first, name->last);
+        printf("%s %s", name->first, name->last);
     } else {
         printf("%s %s %s", name->first, name->middle, name->last);
     }
@@ -67,7 +68,7 @@ void Mid(Name *name) {
 //  "Ben".
 //
 // name: a pointer to a Name
-void Small(Name *name){
+void Small(Name *name) {
     printf("%s", name->first);
 }
 
@@ -82,7 +83,8 @@ void Small(Name *name){
 //
 // name: a pointer to a Name
 // format: a char indicating the format to use (case doesn't matter)
-void FormatName(Name *name, char format){
+void FormatName(Name *name, char format) {
+    format = toupper(format);
     if (format == 'B') {
         Big(name);
     } else if (format == 'L') {
@@ -91,8 +93,10 @@ void FormatName(Name *name, char format){
         Reg(name);
     } else if (format == 'M') {
         Mid(name);
-    } else {
+    } else if (format == 'S') {
         Small(name);
+    } else {
+        printf("You passed in an illegal format.\n");
     }
 }
 
@@ -112,22 +116,23 @@ void FormatName(Name *name, char format){
 // dest: a pointer to an array that is guaranteed to be big enough
 // to hold the formatted name
 void FillName(Name *name, char format, char *dest) {
+    format = toupper(format);
     if (format == 'B') {
         if (name->middle == NULL) {
-	    strcpy(dest, name->first);
-	    strcat(dest, " ");
-	    strcat(dest, name->last);
-	} else {
-	    strcpy(dest, name->first);
+            strcpy(dest, name->first);
+            strcat(dest, " ");
+            strcat(dest, name->last);
+        } else {
+            strcpy(dest, name->first);
             strcat(dest, " ");
             strcat(dest, name->middle);
-	    strcat(dest, " ");
-	    strcat(dest, name->last);
-	}
+            strcat(dest, " ");
+            strcat(dest, name->last);
+        }
     } else if (format == 'L') {
         strcpy(dest, name->last);
-	strcat(dest, ", ");
-	strcat(dest, name->first);
+        strcat(dest, ", ");
+        strcat(dest, name->first);
     } else if (format == 'R') {
         strcpy(dest, name->first);
         strcat(dest, " ");
@@ -141,16 +146,18 @@ void FillName(Name *name, char format, char *dest) {
             strcpy(dest, name->first);
             strcat(dest, " ");
 
-	    char middle_initial[2];
-	    middle_initial[0] = name->middle[0];
-	    middle_initial[1] = '\0';
+            char middle_initial[2];
+            middle_initial[0] = name->middle[0];
+            middle_initial[1] = '\0';
 
             strcat(dest, middle_initial);
             strcat(dest, ". ");
 
             strcat(dest, name->last);
         }
-    } else {
+    } else if (format == 'S') {
         strcpy(dest, name->first);
+    } else {
+        printf("You typed in an illegal format.\n");
     }
 }
