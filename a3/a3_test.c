@@ -111,7 +111,7 @@ void TestFormatName() {
   printf("\n");
   FormatName(&name1, 'L');
   printf("\n");
-  FormatName(&name1, 'r');
+  FormatName(&name1, 'R');
   printf("\n");
   FormatName(&name1, 'M');
   printf("\n");
@@ -120,11 +120,11 @@ void TestFormatName() {
 
   FormatName(&name4, 'B');
   printf("\n");
-  FormatName(&name4, 'l');
+  FormatName(&name4, 'L');
   printf("\n");
   FormatName(&name4, 'R');
   printf("\n");
-  FormatName(&name4, 'm');
+  FormatName(&name4, 'M');
   printf("\n");
   FormatName(&name4, 'S');
   printf("\n");
@@ -136,23 +136,23 @@ int TestFillName() {
   StartTest("Print FillName");
 
   char dest[100] = {0};
-  FillName(&name1, 'b', dest);
+  FillName(&name1, 'B', dest);
   printf("%s\n", dest);
   
   char dest1[100] = {0};
-  FillName(&name1, 'l', dest1);
+  FillName(&name1, 'L', dest1);
   printf("%s\n", dest1);
 
   char dest2[100] = {0};
-  FillName(&name2, 'm', dest2);
+  FillName(&name2, 'M', dest2);
   printf("%s\n", dest2);
  
   char dest3[100] = {0};
-  FillName(&name5, 's', dest3);
+  FillName(&name5, 'S', dest3);
   printf("%s\n", dest3);
 
   char dest4[100] = {0};
-  FillName(&name5, 'w', dest4);
+  FillName(&name5, 'R', dest4);
   printf("%s\n", dest4);
  
   EndTest();
