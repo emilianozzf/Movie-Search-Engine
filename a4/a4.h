@@ -86,7 +86,7 @@ Deck* PushCardToDeck(Card*, Deck*);
 
 // Shows the top card, but does not remove it from the stack.
 // Returns a pointer to the top card.
-// If the deck is empty, return NULL. 
+// If the deck is empty, return NULL.
 Card* PeekAtTopCard(Deck* deck);
 
 // Removes the top card from the deck and returns it.
@@ -94,7 +94,7 @@ Card* PeekAtTopCard(Deck* deck);
 // responsibility of the caller to free the card at the
 // appropriate time.
 // Returns a pointer to the top card in the deck.
-// If the deck is empty, return NULL. 
+// If the deck is empty, return NULL.
 Card* PopCardFromDeck(Deck* deck);
 
 // Determines if the deck is empty.
