@@ -1,3 +1,7 @@
+// Name: Emiliano Zhu
+// Date: 2020.02.05
+// File: deck.c
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

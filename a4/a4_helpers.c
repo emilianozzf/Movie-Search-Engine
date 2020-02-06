@@ -1,3 +1,7 @@
+// Name: Emiliano Zhu
+// Date: 2020.02.05
+// File: a4_helper.c
+
 #include <stdio.h>
 
 #include "a4.h"

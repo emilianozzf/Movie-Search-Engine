@@ -1,3 +1,7 @@
+// Name: Emiliano Zhu
+// Date: 2020.02.05
+// File: a4.h
+
 #ifndef A4_H
 #define A4_H
 
