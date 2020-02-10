@@ -40,13 +40,13 @@ struct game_score {
 
 typedef struct game_score GameScore;
 
-typedef struct card_node CardNode;
-
 struct card_node {
   CardNode *next_card;
   CardNode *prev_card;
   Card *this_card;
 };
+
+typedef struct card_node CardNode;
 
 struct hand {
   int num_cards_in_hand;
@@ -105,18 +105,36 @@ Card* PopCardFromDeck(Deck* deck);
 // Returns 1 if the Deck is empty, 0 otherwise.
 int IsDeckEmpty(Deck* deck);
 
+// Create a Deck for this game, and add any
+// needed cards to the deck.
+// Return a pointer to the deck to be used for the game
+Deck* PopulateDeck();
+
+// Takes all the cards in the deck, rearrange
+// them in random order, and push the cards back into the Deck.
+void Shuffle(Deck *deck);
+
+
+
+
 // Destroys the deck, freeing any memory allocated
 // for this deck (the cards and the deck).
 // DestroyDeck should call DestroyCard on all of the
 // cards in the deck.
 void DestroyDeck(Deck* deck);
 
+// Given a deck (assume that it is already shuffled),
+// take the top card from the deck and alternately give
+// it to player 1 and player 2, until they both have
+// kNumCardsInHand.
+void Deal(Deck *aDeck, Hand *p1hand, Hand *p2hand);
+
 //----------------------------------------
 // Card functions
 //----------------------------------------
 
 // Creates a card, initializing the suit and name to that specified.
-// Returns a pointer to the new card, which has beel allocated on the heap.
+// Returns a pointer to the new card, which has been allocated on the heap.
 // It is the responsibility of the caller to call destroyCard()
 // when it is done with the Card.
 Card* CreateCard(Suit, Name);
@@ -127,6 +145,7 @@ void DestroyCard(Card* card);
 //----------------------------------------
 // Hand functions
 //----------------------------------------
+// Implement these functions in a4.c.
 
 // Creates a Hand struct and initializes any necessary fields.
 // Returns a pointer to the new Hand, which has been allocated on the heap.
@@ -149,24 +168,11 @@ int IsHandEmpty(Hand* hand);
 // Destroys the hand, freeing any memory allocated for it.
 void DestroyHand(Hand* hand);
 
+
 //----------------------------------------
 // Game functions
 //----------------------------------------
-
-// Shuffle the deck.
-// Put them in a random order.
-void Shuffle(Deck *deck);
-
-// Given a deck (assume that it is already shuffled),
-// take the top card from the deck and alternately give
-// it to player 1 and player 2, until they both have
-// kNumCardsInHand.
-void Deal(Deck *aDeck, Hand *p1hand, Hand *p2hand);
-
-// Create a Deck for this game, and add any
-// needed cards to the deck.
-// Return a pointer to the deck to be used for the game
-Deck* PopulateDeck();
+// Implement these functions in a4.c.
 
 // Given a lead card, a players hand, and the card the player wants
 // to play, is it legal?
