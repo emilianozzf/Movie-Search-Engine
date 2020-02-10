@@ -10,7 +10,6 @@
 
 #define PRINT_DEBUG 1
 
-// Put your deck functions in here
 // Creates the deck, initializing any fields necessary.
 // Returns a pointer to the deck, which has been allocated on the heap.
 Deck* CreateDeck() {
@@ -69,17 +68,6 @@ int IsDeckEmpty(Deck* deck) {
     return 0;
 }
 
-// Destroys the deck, freeing any memory allocated
-// for this deck (the cards and the deck).
-// DestroyDeck should call DestroyCard on all of the
-// cards in the deck.
-void DestroyDeck(Deck* deck) {
-    for (int i = 0; i < kNumCardsInDeck; i++) {
-        free(deck->cards[i]);
-    }
-    free(deck);
-}
-
 // Create a Deck for this game, and add any
 // needed cards to the deck.
 // Return a pointer to the deck to be used for the game
@@ -97,6 +85,8 @@ Deck* PopulateDeck() {
     return deck;
 }
 
+// Takes all the cards in the deck, rearrange
+// them in random order, and push the cards back into the Deck.
 void Shuffle(Deck* deck) {
     srand(time(0));
     for (int i = 0; i <= deck->top_card; i++) {
@@ -109,5 +99,33 @@ void Shuffle(Deck* deck) {
     }
 }
 
+// Given a deck (assume that it is already shuffled),
+// take the top card from the deck and alternately give
+// it to player 1 and player 2, until they both have
+// kNumCardsInHand.
 void Deal(Deck* deck, Hand* hand1, Hand* hand2) {
 }
+
+// Destroys the deck, freeing any memory allocated
+// for this deck (the cards and the deck).
+// DestroyDeck should call DestroyCard on all of the
+// cards in the deck.
+void DestroyDeck(Deck* deck) {
+    for (int i = 0; i < kNumCardsInDeck; i++) {
+        free(deck->cards[i]);
+    }
+    free(deck);
+}
+
+// Creates a card, initializing the suit and name to that specified.
+// Returns a pointer to the new card, which has been allocated on the heap.
+// It is the responsibility of the caller to call destroyCard()
+// when it is done with the Card.
+Card* CreateCard(Suit suit, Name name) {
+    return NULL;
+}
+
+// Destroys the card, freeing any memory allocated for the card.
+void DestroyCard(Card* card) {
+}
+

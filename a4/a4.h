@@ -40,13 +40,13 @@ struct game_score {
 
 typedef struct game_score GameScore;
 
+typedef struct card_node CardNode;
+
 struct card_node {
   CardNode *next_card;
   CardNode *prev_card;
   Card *this_card;
 };
-
-typedef struct card_node CardNode;
 
 struct hand {
   int num_cards_in_hand;
@@ -114,9 +114,6 @@ Deck* PopulateDeck();
 // them in random order, and push the cards back into the Deck.
 void Shuffle(Deck *deck);
 
-
-
-
 // Destroys the deck, freeing any memory allocated
 // for this deck (the cards and the deck).
 // DestroyDeck should call DestroyCard on all of the
@@ -137,7 +134,7 @@ void Deal(Deck *aDeck, Hand *p1hand, Hand *p2hand);
 // Returns a pointer to the new card, which has been allocated on the heap.
 // It is the responsibility of the caller to call destroyCard()
 // when it is done with the Card.
-Card* CreateCard(Suit, Name);
+Card* CreateCard(Suit suit, Name name);
 
 // Destroys the card, freeing any memory allocated for the card.
 void DestroyCard(Card* card);
