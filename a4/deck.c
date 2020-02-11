@@ -75,35 +75,47 @@ Deck* PopulateDeck() {
     Deck* deck = CreateDeck();
     for (int suit = HEARTS; suit <= DIAMONDS; suit++) {
         for (int name = NINE; name <= ACE; name++) {
-            Card* card = malloc(sizeof(Card));
-            card->name = name;
-            card->suit = suit;
-            card->value = -1;
+            Card* card = CreateCard(suit, name);
             deck = PushCardToDeck(card, deck);
         }
     }
     return deck;
 }
 
+// Creates a card, initializing the suit and name to that specified.
+// Returns a pointer to the new card, which has been allocated on the heap.
+// It is the responsibility of the caller to call destroyCard()
+// when it is done with the Card.
+Card* CreateCard(Suit suit, Name name) {
+    Card* card = malloc(sizeof(Card));
+    card->suit = suit;
+    card->name = name;
+    card->value = -1;
+    return card;
+}
+
 // Takes all the cards in the deck, rearrange
 // them in random order, and push the cards back into the Deck.
 void Shuffle(Deck* deck) {
     srand(time(0));
-    for (int i = 0; i <= deck->top_card; i++) {
-        int min_idx = i;
-        int max_idx = deck->top_card;
-        int rdm_idx = min_idx + (rand() % (max_idx - min_idx + 1));
-        Card* tmp = deck->cards[i];
-        deck->cards[i] = deck->cards[rdm_idx];
-        deck->cards[rdm_idx] = tmp;
+    int size = deck->top_card + 1;
+    Card* rdm_cards[size];
+    for (int i = 0; i < size; i++) {
+        rdm_cards[i] = NULL;
     }
-}
 
-// Given a deck (assume that it is already shuffled),
-// take the top card from the deck and alternately give
-// it to player 1 and player 2, until they both have
-// kNumCardsInHand.
-void Deal(Deck* deck, Hand* hand1, Hand* hand2) {
+    int i = 0;
+    while (i < size) {
+        int rdm_idx = rand() % size;
+	if (rdm_cards[i] == NULL) {
+            rdm_cards[i] = PopCardFromDeck(deck);
+	    i += 1;
+	}
+    }
+
+    for (int i = 0; i < size; i++) {
+        PushCardToDeck(rdm_cards[i], deck);
+    }
 }
 
 // Destroys the deck, freeing any memory allocated
@@ -112,20 +124,25 @@ void Deal(Deck* deck, Hand* hand1, Hand* hand2) {
 // cards in the deck.
 void DestroyDeck(Deck* deck) {
     for (int i = 0; i < kNumCardsInDeck; i++) {
-        free(deck->cards[i]);
+         DestroyCard(deck->cards[i]);
     }
     free(deck);
 }
 
-// Creates a card, initializing the suit and name to that specified.
-// Returns a pointer to the new card, which has been allocated on the heap.
-// It is the responsibility of the caller to call destroyCard()
-// when it is done with the Card.
-Card* CreateCard(Suit suit, Name name) {
-    return NULL;
-}
-
 // Destroys the card, freeing any memory allocated for the card.
 void DestroyCard(Card* card) {
+    free(card);
 }
+
+// Given a deck (assume that it is already shuffled),
+// take the top card from the deck and alternately give
+// it to player 1 and player 2, until they both have
+// kNumCardsInHand.
+void Deal(Deck* deck, Hand* hand1, Hand* hand2) {
+    for (int i = 0; i < kNumCardsInHand; i++) {
+       AddCardToHand(PopCardFromDeck(deck), hand1);
+       AddCardToHand(PopCardFromDeck(deck), hand2);
+    }
+}
+
 
