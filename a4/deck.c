@@ -54,7 +54,6 @@ Card* PopCardFromDeck(Deck* deck) {
         return NULL;
     }
     Card* return_card = deck->cards[deck->top_card];
-    deck->cards[deck->top_card] = NULL;
     deck->top_card -= 1;
     return return_card;
 }

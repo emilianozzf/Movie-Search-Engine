@@ -130,7 +130,11 @@ int WhoWon(Card *lead_card, Card *followed_card, Suit trump) {
 void ReturnHandToDeck(Hand *hand, Deck *deck) {
      CardNode* cur = hand->first_card;
      while (cur != NULL) {
-         PushCardToDeck(cur->this_card, deck);
-         cur = cur->next_card;
+         RemoveCardFromHand(cur->this_card, hand);
+	 cur = cur->next_card;
      }
+     deck->top_card = kNumCardsInDeck - 1;
 }
+
+
+
