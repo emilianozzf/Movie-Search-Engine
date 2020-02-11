@@ -22,20 +22,19 @@ Hand* CreateHand() {
 
 // Adds a card to the hand.
 void AddCardToHand(Card* card, Hand* hand) {
-   CardNode* new_card = malloc(sizeof(CardNode));
-   new_card->this_card = card;
-   new_card->prev_card = NULL;
-   new_card->next_card = NULL;
+    CardNode* new_card = malloc(sizeof(CardNode));
+    new_card->this_card = card;
+    new_card->prev_card = NULL;
+    new_card->next_card = NULL;
 
-   if (hand->first_card == NULL) {
-       hand->first_card = new_card;
-   }
-   else {
-       hand->first_card->prev_card = new_card;
-       new_card->next_card = hand->first_card;
-       hand->first_card = new_card;
-   }
-   hand->num_cards_in_hand += 1;
+    if (hand->first_card == NULL) {
+        hand->first_card = new_card;
+    } else {
+        hand->first_card->prev_card = new_card;
+        new_card->next_card = hand->first_card;
+        hand->first_card = new_card;
+    }
+    hand->num_cards_in_hand += 1;
 }
 
 // Removes a card from the hand.
@@ -46,26 +45,26 @@ void AddCardToHand(Card* card, Hand* hand) {
 Card* RemoveCardFromHand(Card *card, Hand *hand) {
     CardNode* cur = hand->first_card;
     while (cur != NULL) {
-	 if (cur->this_card == card) {
+        if (cur->this_card == card) {
              if (cur->prev_card == NULL && cur->next_card == NULL) {
-	         hand->first_card = NULL;
-	     } else if (cur->prev_card != NULL && cur->next_card == NULL) {
-	         cur->prev_card->next_card = NULL;
-		 cur->prev_card = NULL;
-	     } else if (cur->prev_card == NULL && cur->next_card != NULL) {
-	         hand->first_card = cur->next_card;
-		 cur->next_card->prev_card = NULL;
-		 cur->next_card = NULL;
-	     } else {
-	         cur->prev_card->next_card = cur->next_card;
-		 cur->next_card->prev_card = cur->prev_card;
-		 cur->next_card = NULL;
-		 cur->prev_card = NULL;
-	     }
-	     free(cur);
-	     break;
-	 }
-	 cur = cur->next_card;
+                 hand->first_card = NULL;
+             } else if (cur->prev_card != NULL && cur->next_card == NULL) {
+                 cur->prev_card->next_card = NULL;
+                 cur->prev_card = NULL;
+             } else if (cur->prev_card == NULL && cur->next_card != NULL) {
+                 hand->first_card = cur->next_card;
+                 cur->next_card->prev_card = NULL;
+                 cur->next_card = NULL;
+             } else {
+                 cur->prev_card->next_card = cur->next_card;
+                 cur->next_card->prev_card = cur->prev_card;
+                 cur->next_card = NULL;
+                 cur->prev_card = NULL;
+             }
+             free(cur);
+             break;
+         }
+         cur = cur->next_card;
     }
     hand->num_cards_in_hand -= 1;
     return card;
@@ -96,12 +95,12 @@ int IsLegalMove(Hand *hand, Card *lead_card, Card *played_card) {
     CardNode* cur = hand->first_card;
     while (cur != NULL) {
         if (cur->this_card->suit == lead_card->suit) {
-	     if (lead_card->suit == played_card->suit) {
-	         return 1;
-	     }
-	     return 0;
-	}
-	cur = cur->next_card;
+             if (lead_card->suit == played_card->suit) {
+                 return 1;
+             }
+             return 0;
+        }
+        cur = cur->next_card;
     }
     return 1;
 }
@@ -113,16 +112,16 @@ int IsLegalMove(Hand *hand, Card *lead_card, Card *played_card) {
 int WhoWon(Card *lead_card, Card *followed_card, Suit trump) {
      if (lead_card->suit == followed_card->suit) {
          if (lead_card->name > followed_card->name) {
-	    return 1;
-	 } else {
-	    return 0;
-	 }
+             return 1;
+         } else {
+             return 0;
+         }
      } else {
          if (followed_card->suit == trump) {
-	    return 0;
-	 } else {
-	    return 1;
-	 }
+             return 0;
+         } else {
+             return 1;
+         }
      }
 }
 
@@ -131,7 +130,7 @@ int WhoWon(Card *lead_card, Card *followed_card, Suit trump) {
 void ReturnHandToDeck(Hand *hand, Deck *deck) {
      CardNode* cur = hand->first_card;
      while (cur != NULL) {
-	 PushCardToDeck(cur->this_card, deck);
+         PushCardToDeck(cur->this_card, deck);
          cur = cur->next_card;
      }
 }

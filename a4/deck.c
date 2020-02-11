@@ -107,10 +107,10 @@ void Shuffle(Deck* deck) {
     int i = 0;
     while (i < size) {
         int rdm_idx = rand() % size;
-	if (rdm_cards[i] == NULL) {
+        if (rdm_cards[i] == NULL) {
             rdm_cards[i] = PopCardFromDeck(deck);
-	    i += 1;
-	}
+            i += 1;
+        }
     }
 
     for (int i = 0; i < size; i++) {
