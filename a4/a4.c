@@ -62,6 +62,8 @@ Card* RemoveCardFromHand(Card *card, Hand *hand) {
 		 cur->next_card = NULL;
 		 cur->prev_card = NULL;
 	     }
+	     free(cur);
+	     break;
 	 }
 	 cur = cur->next_card;
     }
@@ -80,11 +82,6 @@ int IsHandEmpty(Hand* hand) {
 
 // Destroys the hand, freeing any memory allocated for it.
 void DestroyHand(Hand* hand) {
-     CardNode* cur = hand->first_card;
-     while (cur != NULL) {
-	 free(cur);
-         cur = cur->next_card;
-     }
      free(hand);
 }
 

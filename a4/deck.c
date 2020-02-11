@@ -123,7 +123,7 @@ void Shuffle(Deck* deck) {
 // DestroyDeck should call DestroyCard on all of the
 // cards in the deck.
 void DestroyDeck(Deck* deck) {
-    for (int i = 0; i < kNumCardsInDeck; i++) {
+    for (int i = 0; i < deck->top_card + 1; i++) {
          DestroyCard(deck->cards[i]);
     }
     free(deck);
