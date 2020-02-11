@@ -131,7 +131,7 @@ void ReturnHandToDeck(Hand *hand, Deck *deck) {
      CardNode* cur = hand->first_card;
      while (cur != NULL) {
          RemoveCardFromHand(cur->this_card, hand);
-	 cur = cur->next_card;
+         cur = cur->next_card;
      }
      deck->top_card = kNumCardsInDeck - 1;
 }
