@@ -13,6 +13,7 @@ run_play: play
 	./play
 
 .PHONY: clean
+
 clean:
 	rm -f play
 	rm -f test
