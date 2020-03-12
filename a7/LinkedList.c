@@ -136,7 +136,6 @@ int AppendLinkedList(LinkedList list, void *data) {
     return 0;
   }
 
-  LinkedListNodePtr tmp = list->tail;
   list->tail->next = new_node;
   new_node->prev = list->tail;
   new_node->next = NULL;
