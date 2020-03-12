@@ -320,6 +320,32 @@ int LLIterDelete(LLIter iter, LLPayloadFreeFnPtr payload_free_function) {
   // Be sure to call the payload_free_function to free the payload
   // the iterator is pointing to, and also free any LinkedList
   // data structure element as appropriate.
-  
-  
+  if (iter->list->num_elements == 1U) {
+    void* payload1 = iter->cur_node->payload;
+    DestroyLinkedListNode(iter->cur_node);
+    payload_free_function(payload1);
+    free(iter->list);
+    DestroyLLIter(iter);
+    return 0;
+  }
+  LinkedListNodePtr deleted_node = iter->cur_node;
+  void* payload;
+  if (LLIterHasNext(iter) && !LLIterHasPrev(iter)) {
+    LLIterNext(iter);
+    PopLinkedList(iter->list, &payload);
+    payload_free_function(payload);
+  } else if (!LLIterHasNext(iter) && LLIterHasPrev(iter)) {
+    LLIterPrev(iter);
+    SliceLinkedList(iter->list, &payload);
+    payload_free_function(payload);
+  } else {
+    LLIterNext(iter);
+    payload = deleted_node->payload;
+    deleted_node->prev->next = deleted_node->next;
+    deleted_node->next->prev = deleted_node->prev;
+    iter->list->num_elements -= 1;
+    DestroyLinkedListNode(deleted_node);
+    payload_free_function(payload);
+  }
+  return 0;
 }
