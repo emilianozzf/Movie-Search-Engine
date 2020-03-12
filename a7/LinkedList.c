@@ -152,7 +152,7 @@ int PopLinkedList(LinkedList list, void **data) {
   // and (b) the general case of a list with >=2 elements in it.
   // Be sure to call free() to deallocate the memory that was
   // previously allocated by InsertLinkedList().
-    data = list->tail->payload;
+    *data = list->tail->payload;
     LinkedListNodePtr popped_node = list->tail;
     if (list->num_elements == 1U) {
       list->head = NULL;
