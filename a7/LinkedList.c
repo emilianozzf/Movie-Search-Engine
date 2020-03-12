@@ -171,9 +171,18 @@ int SliceLinkedList(LinkedList list, void **data) {
     Assert007(data != NULL);
 
   // Step 6: implement SliceLinkedList.
-
-    
-    return 0; 
+  *data = list->tail->payload;
+  LinkedListNodePtr sliced_node = list->tail;
+  if (list->num_elements == 1U) {
+    list->head = NULL;
+    list->tail = NULL;
+  } else {
+    list->tail->prev->next = NULL;
+    list->tail = list->tail->prev;
+  }
+  list->num_elements -= 1U;
+  DestroyLinkedListNode(sliced_node);
+  return 0;
 }
 
 void SortLinkedList(LinkedList list, 
