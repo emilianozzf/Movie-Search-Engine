@@ -87,13 +87,13 @@ int DestroyLinkedListNode(LinkedListNode *node) {
 
 int InsertLinkedList(LinkedList list, void *data) {
   Assert007(list != NULL);
-  Assert007(data != NULL); 
+  Assert007(data != NULL);
   LinkedListNodePtr new_node = CreateLinkedListNode(data);
-  
+
   if (new_node == NULL) {
-    return 1; 
+    return 1;
   }
-  
+
   if (list->num_elements == 0U) {
     Assert007(list->head == NULL);  // debugging aid
     Assert007(list->tail == NULL);  // debugging aid
@@ -102,8 +102,8 @@ int InsertLinkedList(LinkedList list, void *data) {
     new_node->next = new_node->prev = NULL;
     list->num_elements = 1U;
     return 0;
-  } 
-  
+  }
+
   // Step 3.
   // typical case; list has >=1 elements
   LinkedListNodePtr tmp = list->head;
@@ -116,16 +116,16 @@ int InsertLinkedList(LinkedList list, void *data) {
 }
 
 int AppendLinkedList(LinkedList list, void *data) {
-  Assert007(list != NULL); 
+  Assert007(list != NULL);
   Assert007(data != NULL);
   LinkedListNodePtr new_node = CreateLinkedListNode(data);
-  
+
   // Step 5: implement AppendLinkedList.  It's kind of like
   // InsertLinkedList, but add to the end instead of the beginning.
   if (new_node == NULL) {
   return 1;
   }
-  
+
   if (list->num_elements == 0) {
     Assert007(list->head == NULL);  // debugging aid
     Assert007(list->tail == NULL);  // debugging aid
@@ -147,7 +147,7 @@ int AppendLinkedList(LinkedList list, void *data) {
 
 int PopLinkedList(LinkedList list, void **data) {
     Assert007(list != NULL);
-    Assert007(data != NULL); 
+    Assert007(data != NULL);
 
   // Step 4: implement PopLinkedList.  Make sure you test for
   // and empty list and fail.  If the list is non-empty, there
@@ -166,11 +166,11 @@ int PopLinkedList(LinkedList list, void **data) {
     }
     list->num_elements -= 1U;
     DestroyLinkedListNode(popped_node);
-    return 0; 
+    return 0;
 }
 
 int SliceLinkedList(LinkedList list, void **data) {
-    Assert007(list != NULL); 
+    Assert007(list != NULL);
     Assert007(data != NULL);
 
   // Step 6: implement SliceLinkedList.
@@ -188,7 +188,7 @@ int SliceLinkedList(LinkedList list, void **data) {
   return 0;
 }
 
-void SortLinkedList(LinkedList list, 
+void SortLinkedList(LinkedList list,
                     unsigned int ascending, 
                     LLPayloadComparatorFnPtr compare) {
     Assert007(list != NULL);
