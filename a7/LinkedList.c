@@ -133,12 +133,12 @@ int AppendLinkedList(LinkedList list, void *data) {
     return 0;
   }
 
-  //LinkedListNodePtr tmp = list->tail;
-  //list->tail->next = new_node;
-  //new_node->prev = list->tail;
-  //new_node->next = NULL;
-  //list->tail = list->tail->next;
-  //list->num_elements += 1U;
+  LinkedListNodePtr tmp = list->tail;
+  list->tail->next = new_node;
+  new_node->prev = list->tail;
+  new_node->next = NULL;
+  list->tail = list->tail->next;
+  list->num_elements += 1U;
   return 0;
 }
 
