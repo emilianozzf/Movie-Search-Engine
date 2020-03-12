@@ -119,19 +119,19 @@ int AppendLinkedList(LinkedList list, void *data) {
   
   // Step 5: implement AppendLinkedList.  It's kind of like
   // InsertLinkedList, but add to the end instead of the beginning.
-  //if (new_node == NULL) {
-  //return 1;
-  //}
+  if (new_node == NULL) {
+  return 1;
+  }
   
-  //if (list->num_elements == 0) {
-  //Assert007(list->head == NULL);  // debugging aid
-  //Assert007(list->tail == NULL);  // debugging aid
-  //list->head = new_node;
-  //list->tail = new_node;
-  //new_node->next = new_node->prev = NULL;
-  //list->num_elements = 1U;
-  //return 0;
-  //}
+  if (list->num_elements == 0) {
+    Assert007(list->head == NULL);  // debugging aid
+    Assert007(list->tail == NULL);  // debugging aid
+    list->head = new_node;
+    list->tail = new_node;
+    new_node->next = new_node->prev = NULL;
+    list->num_elements = 1U;
+    return 0;
+  }
 
   //LinkedListNodePtr tmp = list->tail;
   //list->tail->next = new_node;
@@ -139,7 +139,7 @@ int AppendLinkedList(LinkedList list, void *data) {
   //new_node->next = NULL;
   //list->tail = list->tail->next;
   //list->num_elements += 1U;
-  //return 0;
+  return 0;
 }
 
 int PopLinkedList(LinkedList list, void **data) {
@@ -152,14 +152,14 @@ int PopLinkedList(LinkedList list, void **data) {
   // and (b) the general case of a list with >=2 elements in it.
   // Be sure to call free() to deallocate the memory that was
   // previously allocated by InsertLinkedList().
-    *data = list->tail->payload;
-    LinkedListNodePtr popped_node = list->tail;
+    *data = list->head->payload;
+    LinkedListNodePtr popped_node = list->head;
     if (list->num_elements == 1U) {
       list->head = NULL;
       list->tail = NULL;
     } else {
-      list->tail->prev->next = NULL;
-      list->tail = list->tail->prev;
+      list->head->next->prev = NULL;
+      list->head = list->head->next;
     }
     list->num_elements -= 1U;
     DestroyLinkedListNode(popped_node);
