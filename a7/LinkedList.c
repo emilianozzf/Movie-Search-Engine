@@ -24,14 +24,12 @@
 #include <stdlib.h>
 
 LinkedList CreateLinkedList() {
-  LinkedList list = (LinkedList)malloc(sizeof(LinkedListHead));
+  LinkedList list = (LinkedList) malloc(sizeof(LinkedListHead));
   if (list == NULL) {
     // out of memory
     return (LinkedList) NULL;
   }
 
-  // Step 1.
-  // initialize the newly allocated record structure
   list->head = NULL;
   list->tail= NULL;
   list->num_elements = 0U;
@@ -43,17 +41,17 @@ int DestroyLinkedList(LinkedList list,
   Assert007(list != NULL);
   Assert007(payload_free_function != NULL);
 
-  // Step 2.
-  // Free the payloads, as well as the nodes
-  LinkedListNodePtr tmp = NULL;
+  LinkedListNodePtr destroyed_node = NULL;
   LinkedListNodePtr cur = list->head;
   while (cur != NULL) {
-    void *removed_payload = cur->payload;
-    tmp = cur;
+    payload_free_function(cur->payload);
+    destroyed_node = cur;
     cur = cur->next;
-    payload_free_function(removed_payload);
-    DestroyLinkedListNode(tmp);
+    DestroyLinkedListNode(destroyed_node);
     }
+  list->head = NULL;
+  list->tail = NULL;
+  list->num_elements = 0U;
   free(list);
   return 0;
 }
@@ -64,15 +62,15 @@ unsigned int NumElementsInLinkedList(LinkedList list) {
 }
 
 LinkedListNodePtr CreateLinkedListNode(void *data) {
-    LinkedListNodePtr node = (LinkedListNodePtr)malloc(sizeof(LinkedListNode));
+    LinkedListNodePtr node = (LinkedListNodePtr) malloc(sizeof(LinkedListNode));
     if (node == NULL) {
         // Out of memory
         return NULL;
     }
+
     node->payload = data;
     node->next = NULL;
     node->prev = NULL;
-
     return node;
 }
 
@@ -104,8 +102,6 @@ int InsertLinkedList(LinkedList list, void *data) {
     return 0;
   }
 
-  // Step 3.
-  // typical case; list has >=1 elements
   LinkedListNodePtr tmp = list->head;
   list->head = new_node;
   list->head->prev = NULL;
@@ -120,10 +116,8 @@ int AppendLinkedList(LinkedList list, void *data) {
   Assert007(data != NULL);
   LinkedListNodePtr new_node = CreateLinkedListNode(data);
 
-  // Step 5: implement AppendLinkedList.  It's kind of like
-  // InsertLinkedList, but add to the end instead of the beginning.
   if (new_node == NULL) {
-  return 1;
+    return 1;
   }
 
   if (list->num_elements == 0) {
@@ -148,12 +142,10 @@ int PopLinkedList(LinkedList list, void **data) {
     Assert007(list != NULL);
     Assert007(data != NULL);
 
-  // Step 4: implement PopLinkedList.  Make sure you test for
-  // and empty list and fail.  If the list is non-empty, there
-  // are two cases to consider: (a) a list with a single element in it
-  // and (b) the general case of a list with >=2 elements in it.
-  // Be sure to call free() to deallocate the memory that was
-  // previously allocated by InsertLinkedList().
+    if (list->num_elements == 0) {
+      return 0;
+    }
+
     *data = list->head->payload;
     LinkedListNodePtr popped_node = list->head;
     if (list->num_elements == 1U) {
@@ -169,10 +161,13 @@ int PopLinkedList(LinkedList list, void **data) {
 }
 
 int SliceLinkedList(LinkedList list, void **data) {
-    Assert007(list != NULL);
-    Assert007(data != NULL);
+  Assert007(list != NULL);
+  Assert007(data != NULL);
 
-  // Step 6: implement SliceLinkedList.
+  if (list->num_elements == 0) {
+    return 0;
+  }
+
   *data = list->tail->payload;
   LinkedListNodePtr sliced_node = list->tail;
   if (list->num_elements == 1U) {
@@ -230,7 +225,7 @@ LLIter CreateLLIter(LinkedList list) {
   Assert007(list != NULL);
   Assert007(list->num_elements > 0);
 
-  LLIter iter = (LLIter)malloc(sizeof(struct ll_iter));
+  LLIter iter = (LLIter) malloc(sizeof(struct ll_iter));
   Assert007(iter != NULL);
 
   iter->list = list;
@@ -246,8 +241,6 @@ int LLIterHasNext(LLIter iter) {
 int LLIterNext(LLIter iter) {
   Assert007(iter != NULL);
 
-  // Step 7: if there is another node beyond the iterator, advance to it,
-  // and return 0. If there isn't another node, return 1.
   if (LLIterHasNext(iter)) {
     iter->cur_node = iter->cur_node->next;
     return 0;
@@ -269,8 +262,6 @@ int LLIterHasPrev(LLIter iter) {
 
 int LLIterPrev(LLIter iter) {
   Assert007(iter != NULL);
-  // Step 8:  if there is another node beyond the iterator, go to it,
-  // and return 0. If not return 1.
   if (LLIterHasPrev(iter)) {
     iter->cur_node = iter->cur_node->prev;
     return 0;
@@ -310,26 +301,12 @@ int LLIterInsertBefore(LLIter iter, void* payload) {
 int LLIterDelete(LLIter iter, LLPayloadFreeFnPtr payload_free_function) {
   Assert007(iter != NULL);
 
-  // Step 9: implement LLIterDelete. There are several cases
-  // to consider:
-  //
-  // - Case 1: the list becomes empty after deleting.
-  // - Case 2: iter points at head
-  // - Case 3: iter points at tail
-  // - fully general case: iter points in the middle of a list,
-  //                       and you have to "splice".
-  //
-  // Be sure to call the payload_free_function to free the payload
-  // the iterator is pointing to, and also free any LinkedList
-  // data structure element as appropriate.
   if (iter->list->num_elements == 1U) {
-    void* payload1 = iter->cur_node->payload;
-    DestroyLinkedListNode(iter->cur_node);
-    payload_free_function(payload1);
-    free(iter->list);
+    DestroyLinkedList(iter->list, payload_free_function);
     DestroyLLIter(iter);
-    return 0;
+    return 1;
   }
+
   LinkedListNodePtr deleted_node = iter->cur_node;
   void* payload;
   if (LLIterHasNext(iter) && !LLIterHasPrev(iter)) {
