@@ -49,6 +49,7 @@ int DestroyLinkedList(LinkedList list,
     cur = cur->next;
     DestroyLinkedListNode(destroyed_node);
     }
+
   list->head = NULL;
   list->tail = NULL;
   list->num_elements = 0U;
