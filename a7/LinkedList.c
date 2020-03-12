@@ -189,35 +189,35 @@ int SliceLinkedList(LinkedList list, void **data) {
 }
 
 void SortLinkedList(LinkedList list,
-                    unsigned int ascending, 
+                    unsigned int ascending,
                     LLPayloadComparatorFnPtr compare) {
     Assert007(list != NULL);
     if (list->num_elements <2) {
-        return; 
+        return;
     }
 
-    int swapped; 
+    int swapped;
     do {
-      LinkedListNodePtr curnode = list->head; 
-      swapped = 0; 
-      
+      LinkedListNodePtr curnode = list->head;
+      swapped = 0;
+
       while (curnode->next != NULL) {
         // compare this node with the next; swap if needed
-        int compare_result = compare(curnode->payload, curnode->next->payload); 
-        
+        int compare_result = compare(curnode->payload, curnode->next->payload);
+
         if (ascending) {
-          compare_result *= -1; 
+          compare_result *= -1;
         }
-        
+
         if (compare_result < 0) {
           // swap
-          void* tmp; 
-          tmp = curnode->payload; 
+          void* tmp;
+          tmp = curnode->payload;
           curnode->payload = curnode->next->payload;
-          curnode->next->payload = tmp; 
-          swapped = 1; 
+          curnode->next->payload = tmp;
+          swapped = 1;
         }
-        curnode = curnode->next; 
+        curnode = curnode->next;
       }
     } while (swapped);
 }
@@ -230,17 +230,17 @@ void PrintLinkedList(LinkedList list) {
 LLIter CreateLLIter(LinkedList list) {
   Assert007(list != NULL);
   Assert007(list->num_elements > 0);
-  
+
   LLIter iter = (LLIter)malloc(sizeof(struct ll_iter));
-  Assert007(iter != NULL); 
-  
-  iter->list = list; 
+  Assert007(iter != NULL);
+
+  iter->list = list;
   iter->cur_node = list->head;
   return iter;
 }
 
 int LLIterHasNext(LLIter iter) {
-  Assert007(iter != NULL); 
+  Assert007(iter != NULL);
   return (iter->cur_node->next != NULL);
 }
 
@@ -248,7 +248,7 @@ int LLIterNext(LLIter iter) {
   Assert007(iter != NULL);
 
   // Step 7: if there is another node beyond the iterator, advance to it,
-  // and return 0. If there isn't another node, return 1. 
+  // and return 0. If there isn't another node, return 1.
   if (LLIterHasNext(iter)) {
     iter->cur_node = iter->cur_node->next;
     return 0;
@@ -257,19 +257,19 @@ int LLIterNext(LLIter iter) {
 }
 
 int LLIterGetPayload(LLIter iter, void** data) {
-  Assert007(iter != NULL); 
+  Assert007(iter != NULL);
   *data = iter->cur_node->payload;
   return 0;
 }
 
 
 int LLIterHasPrev(LLIter iter) {
-  Assert007(iter != NULL); 
+  Assert007(iter != NULL);
   return (iter->cur_node->prev != NULL);
 }
 
 int LLIterPrev(LLIter iter) {
-  Assert007(iter != NULL); 
+  Assert007(iter != NULL);
   // Step 8:  if there is another node beyond the iterator, go to it,
   // and return 0. If not return 1.
   if (LLIterHasPrev(iter)) {
@@ -280,32 +280,32 @@ int LLIterPrev(LLIter iter) {
 }
 
 int DestroyLLIter(LLIter iter) {
-  Assert007(iter != NULL); 
+  Assert007(iter != NULL);
   iter->cur_node = NULL;
-  iter->list = NULL; 
+  iter->list = NULL;
   free(iter);
   return 0;
 }
 
 int LLIterInsertBefore(LLIter iter, void* payload) {
-  Assert007(iter != NULL); 
+  Assert007(iter != NULL);
   if ((iter->list->num_elements <= 1) ||
       (iter->cur_node == iter->list->head)) {
     // insert item
-    return InsertLinkedList(iter->list, payload); 
+    return InsertLinkedList(iter->list, payload);
   }
-  
+
   LinkedListNodePtr new_node = CreateLinkedListNode(payload);
   if (new_node == NULL) return 1;
-  
+
   new_node->next = iter->cur_node;
   new_node->prev = iter->cur_node->prev;
   iter->cur_node->prev->next = new_node;
   iter->cur_node->prev = new_node;
-  
-   iter->list->num_elements++; 
-   
-   return 0; 
+
+  iter->list->num_elements++;
+
+  return 0;
 }
 
 int LLIterDelete(LLIter iter, LLPayloadFreeFnPtr payload_free_function) {
