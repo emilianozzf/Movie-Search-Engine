@@ -5,15 +5,14 @@
 
 When you are done, update this file with the following info: 
 
-* Name
-* How many hours did it take you to complete the assignment? 
-* Did you collaborate with any other students/TAs/Professors?
+* Name: Emiliano Zhu
+* How many hours did it take you to complete the assignment? 6 hours. 
+* Did you collaborate with any other students/TAs/Professors? No.
 * Did you use any external resources? (note them below)
-    - tbd
-    - tbd
-* What was your favorite part of this assignment?
-* What was challenging about this assignment? 
-* How would you improve the assignment? 
+    - No
+* What was your favorite part of this assignment? Solving memory leak problems.
+* What was challenging about this assignment? Solving memory leak problems.
+* How would you improve the assignment? Refactoring my code.
 
 ## Files
 
