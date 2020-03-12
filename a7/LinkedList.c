@@ -4,9 +4,9 @@
 // CS 5007, Northeastern University, Seattle
 // Summer 2019
 // Adrienne Slaughter
-// 
-// Inspired by UW CSE 333; used with permission. 
-// 
+//
+// Inspired by UW CSE 333; used with permission.
+//
 // This is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published
 //  by the Free Software Foundation, either version 3 of the License,
@@ -29,8 +29,8 @@ LinkedList CreateLinkedList() {
     // out of memory
     return (LinkedList) NULL;
   }
-  
-  //Step 1.
+
+  // Step 1.
   // initialize the newly allocated record structure
   list->head = NULL;
   list->tail= NULL;
@@ -59,7 +59,7 @@ int DestroyLinkedList(LinkedList list,
 }
 
 unsigned int NumElementsInLinkedList(LinkedList list) {
-  Assert007(list != NULL); 
+  Assert007(list != NULL);
   return list->num_elements;
 }
 
@@ -67,7 +67,7 @@ LinkedListNodePtr CreateLinkedListNode(void *data) {
     LinkedListNodePtr node = (LinkedListNodePtr)malloc(sizeof(LinkedListNode));
     if (node == NULL) {
         // Out of memory
-        return NULL; 
+        return NULL;
     }
     node->payload = data;
     node->next = NULL;
@@ -77,7 +77,7 @@ LinkedListNodePtr CreateLinkedListNode(void *data) {
 }
 
 int DestroyLinkedListNode(LinkedListNode *node) {
-  Assert007(node != NULL); 
+  Assert007(node != NULL);
   node->payload = NULL;
   node->next = NULL;
   node->prev = NULL;
