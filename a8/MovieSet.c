@@ -35,14 +35,14 @@ int AddMovieToSet(MovieSet set, Movie *movie) {
 
 
 MovieSet CreateMovieSet(char *desc) {
-  MovieSet set = (MovieSet)malloc(sizeof(struct movieSet));
+  MovieSet set = (MovieSet) malloc(sizeof(struct movieSet));
   if (set == NULL) {
     // Out of memory
     printf("Couldn't malloc for movieSet %s\n", desc);
     return NULL;
   }
 
-  set->desc = (char*)malloc((strlen(desc) + 1) * sizeof(char));
+  set->desc = (char*) malloc((strlen(desc) + 1) * sizeof(char));
 
   if (set->desc == NULL) {
     printf("Couldn't malloc for movieSet->desc");
@@ -54,7 +54,7 @@ MovieSet CreateMovieSet(char *desc) {
 }
 
 void DestroyMovieSet(MovieSet set) {
-  // TODO(Student): What else to do to clean up a MovieSet?
-  // Free set
+  free(set->desc);
+  DestroyLinkedList(set->movies, &DestroyMovieWrapper);
   free(set);
 }

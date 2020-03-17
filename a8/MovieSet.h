@@ -35,7 +35,7 @@ typedef struct movieSet {
 /**
  * Adds a Movie to the given set.
  * Returns: 0 if successful.
- *
+d *
  */
 int AddMovieToSet(MovieSet set, Movie *movie);
 
