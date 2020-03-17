@@ -35,7 +35,7 @@ struct myThing {
 typedef struct myThing MyThing;
 
 MyThing* CreateMyThing(int num, const char *word) {
-  MyThing* thing = (MyThing*)malloc(sizeof(MyThing));
+  MyThing* thing = (MyThing*) malloc(sizeof(MyThing));
   thing->number = num;
   thing->name = word;
   return thing;

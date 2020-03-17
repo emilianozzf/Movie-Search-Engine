@@ -36,7 +36,7 @@ void DestroyNothing(void* thing) {
 
 int main(int argc, char* argv[]) {
   // TODO(Student): Check args, do the right thing. 
-
+  char* filename = "";
   LinkedList movie_list  = ReadFile(filename);
   Index index; // TODO(Student): Create this properly. 
 
