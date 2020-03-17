@@ -26,7 +26,7 @@
 #include "Movie.h"
 #include "MovieSet.h"
 
-const int kInitialSize = 100;
+const int kInitialBucketNumber = 100;
 
 void DestroyMovieSetWrapper(void *movie_set) {
   DestroyMovieSet((MovieSet)movie_set);
@@ -39,9 +39,7 @@ void toLower(char *str, int len) {
 }
 
 Index BuildMovieIndex(LinkedList movies, enum IndexField field_to_index) {
-  // TODO(Student): This 100 is a magic number. 
-  // Is there a better way to initialize this? If so, do it. 
-  Index movie_index = CreateHashtable(kInitialSize);
+  Index movie_index = CreateHashtable(kInitialBucketNumber);
 
   LLIter iter = CreateLLIter(movies);
   Movie* cur_movie;
@@ -50,6 +48,7 @@ Index BuildMovieIndex(LinkedList movies, enum IndexField field_to_index) {
   // TODO: Check that there is at least one movie
   // What happens if there is not at least one movie?
   int result = AddMovieToIndex(movie_index, cur_movie, field_to_index);
+  
 
   while (LLIterHasNext(iter)) {
     LLIterNext(iter);
@@ -78,8 +77,13 @@ int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
 
   // TODO(Student): How do we add movies to the index?
   HTKeyValue kvp;
-
+  unit64_t key = ComputeKey(movie, field);  
+  int res = LookupInHashtable(index, key, &kvp);  
+  if (res == -1) {
+    PutInHashtable(index, kvp, HTKeyValue *old_kvp);
+  } 
   AddMovieToSet((MovieSet)kvp.value, movie);
+  
 
   return 0;
 }
