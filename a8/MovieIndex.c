@@ -77,14 +77,7 @@ int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
 
   // TODO(Student): How do we add movies to the index?
   HTKeyValue kvp;
-  unit64_t key = ComputeKey(movie, field);  
-  int res = LookupInHashtable(index, key, &kvp);  
-  if (res == -1) {
-    PutInHashtable(index, kvp, HTKeyValue *old_kvp);
-  } 
   AddMovieToSet((MovieSet)kvp.value, movie);
-  
-
   return 0;
 }
 
