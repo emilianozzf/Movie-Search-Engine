@@ -64,7 +64,6 @@ int AddMovieActorsToIndex(Index index, Movie *movie) {
   HTKeyValue kvp;
   HTKeyValue old_kvp;
 
-  // TODO(Student): Add movies to the index via actors.
   for (int i = 0; i < movie->num_actors; i++) {
     char lower[strlen(movie->actor_list[i])+1];
     snprintf(lower, strlen(movie->actor_list[i]) + 1, "%s", movie->actor_list[i]);
