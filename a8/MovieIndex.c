@@ -65,18 +65,44 @@ int AddMovieActorsToIndex(Index index, Movie *movie) {
   HTKeyValue old_kvp;
 
   // TODO(Student): Add movies to the index via actors.
-  
-
-  AddMovieToSet((MovieSet)kvp.value, movie);
+  for (int i = 0; i < movie->num_actors; i++) {
+    char lower[strlen(movie->actor_list[i])+1];
+    snprintf(lower, strlen(movie->actor_list[i]) + 1, "%s", movie->actor_list[i]);
+    toLower(lower, strlen(lower));
+    uint64_t key = FNVHash64(lower, strlen(lower));
+    int res = LookupInHashtable(index, key, &kvp);
+    if (res == -1) {
+      kvp.key = key;
+      kvp.value = CreateMovieSet(movie->actor_list[i]);
+      PutInHashtable(index, kvp, &old_kvp);
+    }
+  }
+    AddMovieToSet((MovieSet)kvp.value, movie);
 }
 
 int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
   if (field == Actor) {
     return AddMovieActorsToIndex(index, movie);
   }
-
-  // TODO(Student): How do we add movies to the index?
+  
   HTKeyValue kvp;
+  HTKeyValue old_kvp;
+  uint64_t key = ComputeKey(movie, field);
+  int res = LookupInHashtable(index, key, &kvp);
+  if (res == -1) {
+    kvp.key = key;
+    char rating_str[10];
+    switch (field) {
+      case Genre:
+	kvp.value = CreateMovieSet(movie->genre);
+      case StarRating:
+	snprintf(rating_str, 10, "%f", movie->star_rating);
+	kvp.value = CreateMovieSet(rating_str);
+      case ContentRating:
+	kvp.value = CreateMovieSet(movie->content_rating);
+    }
+    PutInHashtable(index, kvp, &old_kvp);
+  }
   AddMovieToSet((MovieSet)kvp.value, movie);
   return 0;
 }
