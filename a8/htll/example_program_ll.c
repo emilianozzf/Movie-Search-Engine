@@ -58,7 +58,9 @@ int main(int argc, char* argv[]) {
     unsigned int num_items = 15; 
     for (unsigned int i=0; i<num_items; i++) {
       MyThing *thing = (MyThing*)malloc(sizeof(MyThing));
-      // TODO: Check that thing isn't NULL (out of memory)
+      if (thing == NULL) {
+        return 1;
+      }
       thing->number = i;
       thing->name = "Foobar";
       int result = InsertLinkedList(list, thing);
