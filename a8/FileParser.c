@@ -38,7 +38,6 @@ char* CheckAndAllocateString(char* token) {
     return NULL;
   } else {
     char *out = (char *) malloc((strlen(token) + 1) * sizeof(char));
-    // TODO(adrienne): remove when confirmed    strcpy(out, token);
     snprintf(out, strlen(token) + 1, "%s", token);
     return out;
   }
@@ -67,8 +66,29 @@ Movie* CreateMovieFromRow(char *data_row) {
     return NULL;
   }
 
-  // TODO(Student): Parse the row to create and populate a Movie.
-  
+  const char pipe[4] = "|";
+  char* token;
+  token = strtok(data_row, pipe);
+  mov->star_rating = CheckDouble(token);
+  token = strtok(NULL, pipe);
+  mov->title = CheckAndAllocateString(token);
+  token = strtok(NULL, pipe);
+  mov->content_rating = CheckAndAllocateString(token);
+  token = strtok(NULL, pipe);
+  mov->genre = CheckAndAllocateString(token);
+  token = strtok(NULL, pipe);
+  mov->duration = CheckInt(token);
+  token = strtok(NULL, pipe);
+  mov->actor_list = malloc(sizeof(char*) * 15);
+  const char comma[4] = ",";
+  token = strtok(NULL, comma);
+  int i = 0;
+  while (token != NULL) {
+    mov->actor_list[i] = token;
+    i += 1;
+    token = strtok(NULL, comma);
+  }
+  mov->num_actors = i;
   return mov;
 }
 
