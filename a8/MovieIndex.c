@@ -39,8 +39,9 @@ void toLower(char *str, int len) {
 Index BuildMovieIndex(LinkedList movies, enum IndexField field_to_index) {
   Index movie_index = CreateIndex();
 
-  // STEP 4(Student): Check that there is at least one movie
-  // What happens if there is not at least one movie?
+  if (NumElementsInLinkedList(movies) == 0) {
+    return movie_index;
+  }
   LLIter iter = CreateLLIter(movies);
   Movie* cur_movie;
   LLIterGetPayload(iter, (void**)&cur_movie);
