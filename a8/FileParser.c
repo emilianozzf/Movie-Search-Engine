@@ -84,7 +84,7 @@ Movie* CreateMovieFromRow(char *data_row) {
   token = strtok(NULL, comma);
   int i = 0;
   while (token != NULL) {
-    mov->actor_list[i] = token;
+    mov->actor_list[i] = CheckAndAllocateString(token);
     i += 1;
     token = strtok(NULL, comma);
   }

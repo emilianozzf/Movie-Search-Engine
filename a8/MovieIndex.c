@@ -63,9 +63,21 @@ int AddMovieActorsToIndex(Index index, Movie *movie) {
   HTKeyValue kvp;
   HTKeyValue old_kvp;
 
-  // TODO(Student): Add movies to the index via actors. 
-
-  AddMovieToSet((MovieSet)kvp.value, movie);
+  for (int i = 0; i < movie->num_actors; i++) {
+    char lower[strlen(movie->actor_list[i])+1];
+    snprintf(lower, strlen(movie->actor_list[i]) + 1, "%s", movie->actor_list[i]);
+    toLower(lower, strlen(lower));
+    uint64_t key = FNVHash64((unsigned char*)lower, strlen(lower));
+    int res = LookupInHashtable(index, key, &kvp);
+    if (res == -1) {
+      kvp.key = key;
+      kvp.value = CreateMovieSet(movie->actor_list[i]);
+      PutInHashtable(index, kvp, &old_kvp);
+    }
+    AddMovieToSet((MovieSet)kvp.value, movie);
+  }
+  
+  return 0;
 }
 
 int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
@@ -73,15 +85,26 @@ int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
     return AddMovieActorsToIndex(index, movie);
   }
 
-  HTKeyValue kvp; 
-  // TODO(Student): How do we add movies to the index? 
-  // Check hashtable to see if relevant MovieSet already exists
-  // If it does, grab access to it from the hashtable
-  // If it doesn't, create the new MovieSet and get the pointer to it
-
-  // After we either created or retrieved the MovieSet from the Hashtable: 
+  HTKeyValue kvp;
+  uint64_t key = ComputeKey(movie, field);
+  int res = LookupInHashtable(index, key, &kvp);
+  if (res == -1) {
+    HTKeyValue old_kvp;
+    char rating_str[10];
+    kvp.key = key;
+    switch (field) {
+     case Genre:
+       kvp.value = CreateMovieSet(movie->genre);
+     case StarRating:
+       snprintf(rating_str, 10, "%f", movie->star_rating);
+       kvp.value = CreateMovieSet(rating_str);
+     case ContentRating:
+       kvp.value = CreateMovieSet(movie->content_rating);
+    }
+    PutInHashtable(index, kvp, &old_kvp);
+  }
+  
   AddMovieToSet((MovieSet)kvp.value, movie);
-
   return 0;
 }
 
