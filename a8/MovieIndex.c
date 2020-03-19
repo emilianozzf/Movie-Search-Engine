@@ -37,9 +37,7 @@ void toLower(char *str, int len) {
 }
 
 Index BuildMovieIndex(LinkedList movies, enum IndexField field_to_index) {
-  // TODO(Student): This 100 is a magic number. 
-  // Is there a better way to initialize this? If so, do it. 
-  Index movie_index = CreateHashtable(100);
+  Index movie_index = CreateIndex();
 
   // TODO: Check that there is at least one movie
   // What happens if there is not at least one movie?
@@ -86,10 +84,11 @@ int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
   }
 
   HTKeyValue kvp;
+  HTKeyValue old_kvp;
   uint64_t key = ComputeKey(movie, field);
   int res = LookupInHashtable(index, key, &kvp);
+  
   if (res == -1) {
-    HTKeyValue old_kvp;
     char rating_str[10];
     kvp.key = key;
     switch (field) {
@@ -102,6 +101,7 @@ int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
        kvp.value = CreateMovieSet(movie->content_rating);
     }
     PutInHashtable(index, kvp, &old_kvp);
+    
   }
   
   AddMovieToSet((MovieSet)kvp.value, movie);
