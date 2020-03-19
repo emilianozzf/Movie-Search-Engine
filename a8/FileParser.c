@@ -65,9 +65,30 @@ Movie* CreateMovieFromRow(char *data_row) {
     printf("Couldn't create a Movie.\n");
     return NULL;
   }
-
-  // STEP 2(Student): Parse the row to create and populate a Movie.
-  // Use the strtok 
+  
+  const char pipe[4] = "|";
+  char* token;
+  token = strtok(data_row, pipe);
+  mov->star_rating = CheckDouble(token);
+  token = strtok(NULL, pipe);
+  mov->title = CheckAndAllocateString(token);
+  token = strtok(NULL, pipe);
+  mov->content_rating = CheckAndAllocateString(token);
+  token = strtok(NULL, pipe);
+  mov->genre = CheckAndAllocateString(token);
+  token = strtok(NULL, pipe);
+  mov->duration = CheckInt(token);
+  token = strtok(NULL, pipe);
+  const char comma[4] = ",";
+  mov->actor_list = (char**) malloc(sizeof(char*) * 10);
+  token = strtok(NULL, comma);
+  int i = 0;
+  while (token != NULL) {
+    mov->actor_list[i] = CheckAndAllocateString(token);
+    i += 1;
+    token = strtok(NULL, comma);
+  }
+  mov->num_actors = i;
   
   return mov;
 }
