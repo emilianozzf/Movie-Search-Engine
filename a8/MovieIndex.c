@@ -62,11 +62,15 @@ int AddMovieActorsToIndex(Index index, Movie *movie) {
   HTKeyValue kvp;
   HTKeyValue old_kvp;
 
-  // STEP 6(Student): Add movies to the index via actors. 
-  //  Similar to STEP 5.
-
-  
-  AddMovieToSet((MovieSet)kvp.value, movie);
+  for (int i = 0; i < movie->num_actors; i++) {
+    kvp.key = ComputeKey(movie, Actor, i);
+    int res = LookupInHashtable(index, kvp.key, &kvp);
+    if (res == -1) {
+      kvp.value = CreateMovieSet(movie->actor_list[i]);
+      PutInHashtable(index, kvp, &old_kvp);
+    }
+    AddMovieToSet((MovieSet)kvp.value, movie);
+  }
 }
 
 int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
@@ -76,14 +80,22 @@ int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
 
   HTKeyValue kvp;
   kvp.key = ComputeKey(movie, field, 0);
+  int res = LookupInHashtable(index, kvp.key, &kvp);
+  if (res == -1) {
+    char rating_str[10];
+    switch (field) {
+      case Genre:
+	kvp.value = CreateMovieSet(movie->genre);
+      case StarRating:
+	snprintf(rating_str, 10, "%f", movie->star_rating);
+	kvp.value = CreateMovieSet(rating_str);
+      case ContentRating:
+        kvp.value = CreateMovieSet(movie->content_rating);
+    }
+    HTKeyValue old_kvp;
+    PutInHashtable(index, kvp, &old_kvp);
+  }
   
-  // STEP 5(Student): How do we add movies to the index?
-  // The general idea: 
-  // Check hashtable to see if relevant MovieSet already exists
-  // If it does, grab access to it from the hashtable
-  // If it doesn't, create the new MovieSet and get the pointer to it
-  // Put the new MovieSet into the Hashtable.
-
   // After we either created or retrieved the MovieSet from the Hashtable: 
   AddMovieToSet((MovieSet)kvp.value, movie);
 
