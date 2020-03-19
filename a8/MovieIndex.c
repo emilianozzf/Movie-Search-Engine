@@ -79,6 +79,7 @@ int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
   }
 
   HTKeyValue kvp;
+  HTKeyValue old_kvp;
   kvp.key = ComputeKey(movie, field, 0);
   int res = LookupInHashtable(index, kvp.key, &kvp);
   if (res == -1) {
@@ -87,18 +88,15 @@ int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
       case Genre:
 	kvp.value = CreateMovieSet(movie->genre);
       case StarRating:
-	snprintf(rating_str, 10, "%f", movie->star_rating);
-	kvp.value = CreateMovieSet(rating_str);
+        snprintf(rating_str, 10, "%f", movie->star_rating);
+        kvp.value = CreateMovieSet(rating_str);
       case ContentRating:
         kvp.value = CreateMovieSet(movie->content_rating);
     }
-    HTKeyValue old_kvp;
     PutInHashtable(index, kvp, &old_kvp);
   }
-  
   // After we either created or retrieved the MovieSet from the Hashtable: 
   AddMovieToSet((MovieSet)kvp.value, movie);
-
   return 0;
 }
 

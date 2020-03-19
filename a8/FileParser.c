@@ -81,7 +81,7 @@ Movie* CreateMovieFromRow(char *data_row) {
   token = strtok(NULL, pipe);
   const char comma[4] = ",";
   mov->actor_list = (char**) malloc(sizeof(char*) * 10);
-  token = strtok(NULL, comma);
+  token = strtok(token, comma);
   int i = 0;
   while (token != NULL) {
     mov->actor_list[i] = CheckAndAllocateString(token);
@@ -89,7 +89,6 @@ Movie* CreateMovieFromRow(char *data_row) {
     token = strtok(NULL, comma);
   }
   mov->num_actors = i;
-  
   return mov;
 }
 
@@ -98,7 +97,6 @@ LinkedList ReadFile(char* filename) {
   FILE *cfPtr;
 
   LinkedList movie_list = CreateLinkedList();
-
   if ((cfPtr = fopen(filename, "r")) == NULL) {
     printf("File could not be opened\n");
     DestroyLinkedList(movie_list, NULL);
@@ -107,7 +105,7 @@ LinkedList ReadFile(char* filename) {
     char* row = NULL;
     ssize_t read;
     size_t len = 0;
-
+    
     while ((read = getline(&row, &len, cfPtr)) != -1) {
       // Got the line; create a movie from it
       MoviePtr movie = CreateMovieFromRow(row);
@@ -115,6 +113,7 @@ LinkedList ReadFile(char* filename) {
         InsertLinkedList(movie_list, movie);
       }
     }
+    printf("Hi, I'm here!!!\n");
     free(row);
     fclose(cfPtr);
   }

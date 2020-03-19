@@ -45,7 +45,7 @@ void PrintReport(Index index) {
 }
 
 void OutputMovieSet(MovieSet movie_set) {
-  // STEP 7(Student): Print the MovieSet to the terminal. 
+  // STEP 7(Student): Print the MovieSet to the t
+  
 }
-
 

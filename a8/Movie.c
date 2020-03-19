@@ -41,13 +41,21 @@ Movie* CreateMovie() {
 }
 
 void DestroyMovie(Movie* movie) {
-  free(movie->title);
-  free(movie->content_rating);
-  free(movie->genre);
-  for (int i = 0; i < movie->num_actors; i++) {
-    free(movie->actor_list[i]);
+  if (movie->title != NULL) {
+    free(movie->title);
   }
-  free(movie->actor_list);
+  if (movie->content_rating != NULL) {
+    free(movie->content_rating);
+  }
+  if (movie->genre != NULL) {
+    free(movie->genre);
+  }
+  if (movie->num_actors != NULL) {
+    for (int i = 0; i < movie->num_actors; i++) {
+      free(movie->actor_list[i]);
+    }
+    free(movie->actor_list);
+  }
   free(movie);
 }
 
