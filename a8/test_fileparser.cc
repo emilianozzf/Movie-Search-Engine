@@ -35,7 +35,8 @@ void DestroyLLMovie(void *payload) {
   DestroyMovie((Movie*)payload);
 }
 
-// TestSuiteName TestCaseName
+
+//  TestSuiteName TestCaseName
 TEST(Movie, CreateDestroyMovie) {
   Movie* m1 = CreateMovie();
   ASSERT_TRUE(m1 != NULL);
@@ -43,8 +44,8 @@ TEST(Movie, CreateDestroyMovie) {
   ASSERT_EQ(m1->content_rating, nullptr);
   ASSERT_EQ(m1->genre, nullptr);
   ASSERT_EQ(m1->actor_list, nullptr);
-  ASSERT_EQ(m1->star_rating, 0);
-  ASSERT_EQ(m1->duration, 0);
+  ASSERT_EQ(m1->star_rating, -1);
+  ASSERT_EQ(m1->duration, -1);
   ASSERT_EQ(m1->num_actors, 0);
   ASSERT_EQ(m1->title, nullptr);
 
@@ -64,12 +65,12 @@ TEST(Movie, CreateManualAndDestroyMovie) {
   actors[1] = "Meg Ryan";
   m1->actor_list = actors;
 
-  DestroyMovie(m1);
+  free(m1);
 }
 
 char* MallocString(const char* str) {
   char* cr = (char*)malloc(sizeof(char) * strlen(str) + 1);
-  snprintf(cr, strlen(str), "%s", str);
+  snprintf(cr, strlen(str)+1, "%s", str);
   return cr; 
 }
 
@@ -81,7 +82,7 @@ TEST(Movie, CreateWithMallocdData) {
   m1->duration = 125;
   m1->genre = MallocString("RomCom");
   m1->num_actors = 2;
-  char* actors[2] = {};
+  char** actors = (char**) malloc(sizeof(char*) * 2);
   actors[0] = MallocString("Tom Hanks");
   actors[1] = MallocString("Meg Ryan");
   m1->actor_list = actors;
@@ -94,7 +95,6 @@ TEST(Movie, CreateWithMallocdData) {
   ASSERT_NE(m1->actor_list, nullptr);
   
   DestroyMovie(m1);
-
 }
 
 TEST(Movie, CreateFromRow) {

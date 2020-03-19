@@ -29,14 +29,25 @@ Movie* CreateMovie() {
     printf("Couldn't allocate more memory to create a Movie\n");
     return NULL;
   }
-
+  mov->title = NULL;
+  mov->star_rating = -1.0;
+  mov->content_rating = NULL;
+  mov->genre = NULL;
+  mov->duration = -1;
+  mov->actor_list = NULL;
+  mov->num_actors = 0;
+  
   return mov;
 }
 
 void DestroyMovie(Movie* movie) {
-  // TODO(Student): Make sure the movie is destroyed properly. 
-
+  free(movie->title);
+  free(movie->content_rating);
+  free(movie->genre);
+  for (int i = 0; i < movie->num_actors; i++) {
+    free(movie->actor_list[i]);
+  }
+  free(movie->actor_list);
   free(movie);
 }
-
 
