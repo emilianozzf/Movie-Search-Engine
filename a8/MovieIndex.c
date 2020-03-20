@@ -57,6 +57,27 @@ Index BuildMovieIndex(LinkedList movies, enum IndexField field_to_index) {
   return movie_index;
 }
 
+int ContainsMovie(MovieSet movie_set, Movie* movie) {
+  if (NumElementsInLinkedList(movie_set->movies) == 0) {
+    return 0;
+  }
+
+  LLIter iter = CreateLLIter(movie_set->movies);
+  Movie* item;
+  LLIterGetPayload(iter, &item);
+  if (item == movie) {
+    return 1;
+  }
+  while (LLIterNext(iter) == 1) {
+    LLIterNext(iter);
+    LLIterGetPayload(iter, &item);
+    if	(item == movie) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
 
 int AddMovieActorsToIndex(Index index, Movie *movie) {
   HTKeyValue kvp;
@@ -95,10 +116,16 @@ int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
     }
     PutInHashtable(index, kvp, &old_kvp);
   }
+  
+  if (ContainsMovie(kvp.value, movie) == 1) {
+    return -1;
+  }
+  
   // After we either created or retrieved the MovieSet from the Hashtable: 
   AddMovieToSet((MovieSet)kvp.value, movie);
   return 0;
 }
+
 
 uint64_t ComputeKey(Movie* movie, enum IndexField which_field, int which_actor) {
   char rating_str[10];

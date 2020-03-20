@@ -113,7 +113,6 @@ LinkedList ReadFile(char* filename) {
         InsertLinkedList(movie_list, movie);
       }
     }
-    printf("Hi, I'm here!!!\n");
     free(row);
     fclose(cfPtr);
   }
