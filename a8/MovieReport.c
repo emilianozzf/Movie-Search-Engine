@@ -45,7 +45,6 @@ void PrintReport(Index index) {
 }
 
 void OutputMovieSet(MovieSet movie_set) {
-  // STEP 7(Student): Print the MovieSet to the t
   printf("IndexType: %s\n", movie_set->desc);
   printf("%d items\n", NumElementsInLinkedList(movie_set->movies));
 
