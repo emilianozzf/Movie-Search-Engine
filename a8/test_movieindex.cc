@@ -110,16 +110,13 @@ TEST(MovieIndex, BuildMovieIndexFromFile) {
 
   Index index = BuildMovieIndex(movie_list, Genre);
 
-  // Do a few spot checks.
-  // E.g., Pull out a MovieSet from the Hashtable;
-  // Check to see if the set has expected number of movies,
-  // a particular movie, etc.
-
-//  HTKeyValue result;
-//  uint64_t key = FNVHash64((unsigned char*)"Crime", 5);
-//  result.key = key;
-//  LookupInHashtable(index, key, &result);
-//  ASSERT_EQ(4u, NumElementsInLinkedList(((MovieSet)result.value)->movies));
+  // DONE (Emiliano Zhu): Pull out a MovieSet from the Hashtable;
+  // Check to see if the set has expected number of movies.
+  HTKeyValue result;
+  uint64_t key = FNVHash64((unsigned char*)"Crime", 5);
+  result.key = key;
+  LookupInHashtable(index, key, &result);
+  ASSERT_EQ(4u, NumElementsInLinkedList(((MovieSet)result.value)->movies));
 
   DestroyLinkedList(movie_list, &DestroyNothing);
   DestroyIndex(index);

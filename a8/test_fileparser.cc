@@ -112,10 +112,12 @@ TEST(Movie, CreateFromRow) {
   ASSERT_EQ(0, strcmp(m1->title, "The Shawshank Redemption"));
   ASSERT_EQ(142, m1->duration);
   ASSERT_EQ(0, strcmp(m1->genre, "Crime"));
-  //  ASSERT_EQ(-1, m1->actor_list); // TODO: Check actors
-
-
-  // TODO(student): Create from a improper row
+  // DONE (Emiliano Zhu): Check actors
+  ASSERT_NE(m1->actor_list, nullptr);
+  ASSERT_EQ(3, m1->num_actors);
+  ASSERT_EQ(0, strcmp(m1->actor_list[0], "Tim Robbins"));
+  ASSERT_EQ(0, strcmp(m1->actor_list[1], "Morgan Freeman"));
+  ASSERT_EQ(0, strcmp(m1->actor_list[2], "Bob Gunton"));
 
   DestroyMovie(m1);
 }
