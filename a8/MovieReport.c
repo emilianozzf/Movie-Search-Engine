@@ -46,6 +46,20 @@ void PrintReport(Index index) {
 
 void OutputMovieSet(MovieSet movie_set) {
   // STEP 7(Student): Print the MovieSet to the t
+  printf("IndexType: %s\n", movie_set->desc);
+  printf("%d items\n", NumElementsInLinkedList(movie_set->movies));
+
+  LLIter iter = CreateLLIter(movie_set->movies);
+  Movie* cur_movie;
+  LLIterGetPayload(iter, &cur_movie);
+  printf("  %s\n", cur_movie->title);
   
+  while (LLIterHasNext(iter)) {
+    LLIterNext(iter);
+    LLIterGetPayload(iter, &cur_movie);
+    printf("  %s\n", cur_movie->title);
+  }
+  
+  DestroyLLIter(iter);
 }
 

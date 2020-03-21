@@ -56,7 +56,11 @@ MovieSet CreateMovieSet(char *desc) {
 void DestroyMovieSet(MovieSet set) {
   if (set->desc != NULL) {
     free(set->desc);
+    set->desc = NULL;
   }
-  DestroyLinkedList(set->movies, &DestroyMovieWrapper);
+  if (set->movies != NULL) {
+    DestroyLinkedList(set->movies, &DestroyMovieWrapper);
+    set->movies = NULL;
+  }
   free(set);
 }

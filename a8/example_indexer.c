@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
   LinkedList movie_list  = ReadFile(filename);
   Index index =  BuildMovieIndex(movie_list, field_to_index);
 
-  //PrintReport(index);
+  PrintReport(index);
   DestroyLinkedList(movie_list, &DestroyNothing);
   DestroyIndex(index);
 
