@@ -46,8 +46,8 @@ TEST(Movie, CreateDestroyMovie) {
   ASSERT_EQ(m1->content_rating, nullptr);
   ASSERT_EQ(m1->genre, nullptr);
   ASSERT_EQ(m1->actor_list, nullptr);
-  ASSERT_EQ(m1->star_rating, -1);
-  ASSERT_EQ(m1->duration, -1);
+  ASSERT_EQ(m1->star_rating, 0.0);
+  ASSERT_EQ(m1->duration, 0);
   ASSERT_EQ(m1->num_actors, 0);
   ASSERT_EQ(m1->title, nullptr);
 
@@ -71,7 +71,7 @@ TEST(Movie, CreateManualAndDestroyMovie) {
 }
 
 char* MallocString(const char* str) {
-  char* cr = (char*)malloc(sizeof(str[0]) * strlen(str) + 1);
+  char* cr = (char*) malloc(sizeof(str[0]) * (strlen(str) + 1));
   snprintf(cr, strlen(str)+1, "%s", str);
   return cr;
 }
@@ -96,6 +96,16 @@ TEST(Movie, CreateWithMallocdData) {
   ASSERT_NE(m1->actor_list[1], nullptr);
   ASSERT_NE(m1->actor_list, nullptr);
 
+  // DONE (Emiliano Zhu): checked each filds of movie struct
+  ASSERT_EQ(7.5, m1->star_rating);
+  ASSERT_EQ(0, strcmp(m1->content_rating, "PG"));
+  ASSERT_EQ(0, strcmp(m1->title, "Sleepless in Seattle"));
+  ASSERT_EQ(125, m1->duration);
+  ASSERT_EQ(0, strcmp(m1->genre, "RomCom"));
+  ASSERT_EQ(2, m1->num_actors);
+  ASSERT_EQ(0, strcmp(m1->actor_list[0], "Tom Hanks"));
+  ASSERT_EQ(0, strcmp(m1->actor_list[1], "Meg Ryan"));
+
   DestroyMovie(m1);
 }
 
@@ -112,7 +122,8 @@ TEST(Movie, CreateFromRow) {
   ASSERT_EQ(0, strcmp(m1->title, "The Shawshank Redemption"));
   ASSERT_EQ(142, m1->duration);
   ASSERT_EQ(0, strcmp(m1->genre, "Crime"));
-  // DONE (Emiliano Zhu): Check actors
+
+  // DONE (Emiliano Zhu): check actors
   ASSERT_NE(m1->actor_list, nullptr);
   ASSERT_EQ(3, m1->num_actors);
   ASSERT_EQ(0, strcmp(m1->actor_list[0], "Tim Robbins"));

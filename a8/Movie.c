@@ -26,16 +26,17 @@
 
 
 Movie* CreateMovie() {
-  Movie *mov = (Movie*)malloc(sizeof(Movie));
+  Movie* mov = (Movie*) malloc(sizeof(Movie));
   if (mov == NULL) {
     printf("Couldn't allocate more memory to create a Movie\n");
     return NULL;
   }
+
   mov->title = NULL;
-  mov->star_rating = -1.0;
+  mov->star_rating = 0.0;
   mov->content_rating = NULL;
   mov->genre = NULL;
-  mov->duration = -1;
+  mov->duration = 0;
   mov->actor_list = NULL;
   mov->num_actors = 0;
 
@@ -67,4 +68,3 @@ void DestroyMovie(Movie* movie) {
   }
   free(movie);
 }
-

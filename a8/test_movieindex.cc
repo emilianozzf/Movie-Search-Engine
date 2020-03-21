@@ -110,8 +110,8 @@ TEST(MovieIndex, BuildMovieIndexFromFile) {
 
   Index index = BuildMovieIndex(movie_list, Genre);
 
-  // DONE (Emiliano Zhu): Pull out a MovieSet from the Hashtable;
-  // Check to see if the set has expected number of movies.
+  // DONE (Emiliano Zhu): pull out a MovieSet from the Hashtable;
+  // check to see if the set has expected number of movies.
   HTKeyValue result;
   uint64_t key = FNVHash64((unsigned char*)"Crime", 5);
   result.key = key;
