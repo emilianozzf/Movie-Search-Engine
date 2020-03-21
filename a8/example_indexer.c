@@ -35,14 +35,44 @@ void DestroyNothing(void* thing) {
 }
 
 int main(int argc, char* argv[]) {
-  // STEP 8(Student): Check args, do the right thing. 
-  char* filename; 
-  LinkedList movie_list  = ReadFile(filename);
-  Index index; // STEP 9(Student): Create the index properly. 
+  int sflag = 0;
+  int cflag = 0;
+  int gflag = 0;
+  int aflag = 0;
+  char* file_name;
+  
+  int o;
+  const char *optstring = "s:c:g:a:";
+  if ((o = getopt(argc, argv, optstring)) != -1) {
+    switch (o) {
+      case 's':
+	sflag = 1;
+	break;
+      case 'c':
+	cflag = 1;
+        break;
+      case 'g':
+	gflag = 1;
+	break;
+      case 'a':
+	aflag = 1;
+	break;
+      case '?':
+	printf("error optopt: %c\n", optopt);
+	printf("error opterr: %d\n", opterr);
+	break;
+    }
+  } else {
+    printf("usage: ./example -s/-c/-g/-a data/test (one and only one flag may be provided)\n");
+  }
+  
+  char* filename = optarg;
+  //LinkedList movie_list  = ReadFile(filename);
+  //Index index; // STEP 9(Student): Create the index properly. 
 
-  PrintReport(index);
-  DestroyLinkedList(movie_list, &DestroyNothing);
-  DestroyIndex(index);
+  //PrintReport(index);
+  //DestroyLinkedList(movie_list, &DestroyNothing);
+  //DestroyIndex(index);
 
   return 0;
 }
