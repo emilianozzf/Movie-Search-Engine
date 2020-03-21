@@ -88,17 +88,30 @@ TEST(MovieIndex, AddMovieToIndex) {
   // Add movie to index
   AddMovieToIndex(index, m1, ContentRating);
 
-  // Check that movie is in index
-
-  // Check size/num elements (should be num of types, not of movies)
+  // DONE (Emiliano Zhu): check that movie is in index
   ASSERT_EQ(NumElemsInHashtable(index), 1);
+  HTKeyValue result;
+  result.key = FNVHash64((unsigned char*)"R", 1);
+  LookupInHashtable(index, result.key, &result);
+  ASSERT_EQ(1u, NumElementsInLinkedList(((MovieSet)result.value)->movies));
 
   // Try to insert movie again
   AddMovieToIndex(index, m1, ContentRating);
 
+  // DONE (Emiliano Zhu): check that no duplicate is inserted to the index
+  ASSERT_EQ(NumElemsInHashtable(index), 1);
+  result.key = FNVHash64((unsigned char*)"R", 1);
+  LookupInHashtable(index, result.key, &result);
+  ASSERT_EQ(1u, NumElementsInLinkedList(((MovieSet)result.value)->movies));
+
   // Add another movie to the index (same IndexType)
   AddMovieToIndex(index, m2, ContentRating);
 
+  // DONE (Emiliano Zhu): check a new movie is interted to the index
+  ASSERT_EQ(NumElemsInHashtable(index), 2);
+  result.key = FNVHash64((unsigned char*)"PG", 2);
+  LookupInHashtable(index, result.key, &result);
+  ASSERT_EQ(1u, NumElementsInLinkedList(((MovieSet)result.value)->movies));
   // Destroy movie index
   DestroyIndex(index);
 }
