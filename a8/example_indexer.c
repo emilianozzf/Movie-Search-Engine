@@ -35,27 +35,23 @@ void DestroyNothing(void* thing) {
 }
 
 int main(int argc, char* argv[]) {
-  int sflag = 0;
-  int cflag = 0;
-  int gflag = 0;
-  int aflag = 0;
-  char* file_name;
+  enum IndexField field_to_index;
   
   int o;
   const char *optstring = "s:c:g:a:";
   if ((o = getopt(argc, argv, optstring)) != -1) {
     switch (o) {
       case 's':
-	sflag = 1;
+	field_to_index = StarRating;
 	break;
       case 'c':
-	cflag = 1;
+	field_to_index = ContentRating;
         break;
       case 'g':
-	gflag = 1;
+	field_to_index = Genre;
 	break;
       case 'a':
-	aflag = 1;
+	field_to_index = Actor;
 	break;
       case '?':
 	printf("error optopt: %c\n", optopt);
@@ -67,12 +63,12 @@ int main(int argc, char* argv[]) {
   }
   
   char* filename = optarg;
-  //LinkedList movie_list  = ReadFile(filename);
-  //Index index; // STEP 9(Student): Create the index properly. 
+  LinkedList movie_list  = ReadFile(filename);
+  Index index =  BuildMovieIndex(movie_list, field_to_index);
 
   //PrintReport(index);
-  //DestroyLinkedList(movie_list, &DestroyNothing);
-  //DestroyIndex(index);
+  DestroyLinkedList(movie_list, &DestroyNothing);
+  DestroyIndex(index);
 
   return 0;
 }
