@@ -42,15 +42,16 @@ Index BuildMovieIndex(LinkedList movies, enum IndexField field_to_index) {
   if (NumElementsInLinkedList(movies) == 0) {
     return movie_index;
   }
+  
   LLIter iter = CreateLLIter(movies);
   Movie* cur_movie;
-  LLIterGetPayload(iter, (void**)&cur_movie);
+  LLIterGetPayload(iter, &cur_movie);
 
   int result = AddMovieToIndex(movie_index, cur_movie, field_to_index);
   
-  while (LLIterHasNext(iter)) {
+  while (LLIterHasNext(iter) == 1) {
     LLIterNext(iter);
-    LLIterGetPayload(iter, (void**)&cur_movie);
+    LLIterGetPayload(iter, &cur_movie);
     result = AddMovieToIndex(movie_index, cur_movie, field_to_index);
   }
   DestroyLLIter(iter);
@@ -61,20 +62,26 @@ int ContainsMovie(MovieSet movie_set, Movie* movie) {
   if (NumElementsInLinkedList(movie_set->movies) == 0) {
     return 0;
   }
-
+  
   LLIter iter = CreateLLIter(movie_set->movies);
   Movie* item;
   LLIterGetPayload(iter, &item);
+  
   if (item == movie) {
+    DestroyLLIter(iter);
     return 1;
   }
-  while (LLIterNext(iter) == 1) {
+
+  while (LLIterHasNext(iter) == 1) {
     LLIterNext(iter);
     LLIterGetPayload(iter, &item);
     if	(item == movie) {
+      DestroyLLIter(iter);
       return 1;
     }
   }
+
+  DestroyLLIter(iter);
   return 0;
 }
 
@@ -86,12 +93,19 @@ int AddMovieActorsToIndex(Index index, Movie *movie) {
   for (int i = 0; i < movie->num_actors; i++) {
     kvp.key = ComputeKey(movie, Actor, i);
     int res = LookupInHashtable(index, kvp.key, &kvp);
+    
     if (res == -1) {
       kvp.value = CreateMovieSet(movie->actor_list[i]);
       PutInHashtable(index, kvp, &old_kvp);
     }
+    
+    if (ContainsMovie(kvp.value, movie) == 1) {
+       continue;
+    }
+    
     AddMovieToSet((MovieSet)kvp.value, movie);
   }
+  return 0;
 }
 
 int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
@@ -103,25 +117,31 @@ int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
   HTKeyValue old_kvp;
   kvp.key = ComputeKey(movie, field, 0);
   int res = LookupInHashtable(index, kvp.key, &kvp);
+  
   if (res == -1) {
     char rating_str[10];
+    MovieSet new_movie_set;
+    
     switch (field) {
       case Genre:
-	kvp.value = CreateMovieSet(movie->genre);
+	new_movie_set = CreateMovieSet(movie->genre);
+	break;
       case StarRating:
         snprintf(rating_str, 10, "%f", movie->star_rating);
-        kvp.value = CreateMovieSet(rating_str);
+        new_movie_set = CreateMovieSet(rating_str);
+	break;
       case ContentRating:
-        kvp.value = CreateMovieSet(movie->content_rating);
+        new_movie_set = CreateMovieSet(movie->content_rating);
+	break;
     }
-    PutInHashtable(index, kvp, &old_kvp);
+    kvp.value = new_movie_set;
+    int result = PutInHashtable(index, kvp, &old_kvp);
   }
-  
+
   if (ContainsMovie(kvp.value, movie) == 1) {
     return -1;
   }
-  
-  // After we either created or retrieved the MovieSet from the Hashtable: 
+
   AddMovieToSet((MovieSet)kvp.value, movie);
   return 0;
 }

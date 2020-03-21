@@ -70,36 +70,36 @@ TEST(MovieIndex, CreateDestroy) {
   DestroyIndex(index);
 }
 
-//TEST(MovieIndex, AddMovieToIndex) {
+TEST(MovieIndex, AddMovieToIndex) {
   // Copying the string from a const to an array
   // (to be more similar to the actual use case)
-//  char row[1000];
-//  strcpy(row, movie_row_A);
+  char row[1000];
+  strcpy(row, movie_row_A);
   // Take a movie
-//  MoviePtr m1 = CreateMovieFromRow(row);
-//  strcpy(row, movie_row_B);
-//  MoviePtr m2 = CreateMovieFromRow(row);
+  MoviePtr m1 = CreateMovieFromRow(row);
+  strcpy(row, movie_row_B);
+  MoviePtr m2 = CreateMovieFromRow(row);
 
   // Create Index
-//  Index index = CreateIndex();
+  Index index = CreateIndex();
 
   // Add movie to index
-//  AddMovieToIndex(index, m1, ContentRating);
+  AddMovieToIndex(index, m1, ContentRating);
 
   // Check that movie is in index
 
   // Check size/num elements (should be num of types, not of movies)
-//  ASSERT_EQ(NumElemsInHashtable(index), 1);
+  ASSERT_EQ(NumElemsInHashtable(index), 1);
 
   // Try to insert movie again
-//  AddMovieToIndex(index, m1, ContentRating);
+  AddMovieToIndex(index, m1, ContentRating);
 
   // Add another movie to the index (same IndexType)
-//  AddMovieToIndex(index, m2, ContentRating);
+  AddMovieToIndex(index, m2, ContentRating);
 
   // Destroy movie index
-//  DestroyIndex(index);
-//}
+  DestroyIndex(index);
+}
 
 TEST(MovieIndex, BuildMovieIndexFromFile) {
   LinkedList movie_list  = ReadFile(const_cast<char *>("data/test"));
@@ -112,8 +112,15 @@ TEST(MovieIndex, BuildMovieIndexFromFile) {
   // E.g., Pull out a MovieSet from the Hashtable;
   // Check to see if the set has expected number of movies,
   // a particular movie, etc.
-  DestroyIndex(index);
+
+//  HTKeyValue result;
+//  uint64_t key = FNVHash64((unsigned char*)"Crime", 5);
+//  result.key = key;
+//  LookupInHashtable(index, key, &result);
+//  ASSERT_EQ(4u, NumElementsInLinkedList(((MovieSet)result.value)->movies));
+
   DestroyLinkedList(movie_list, &DestroyNothing);
+  DestroyIndex(index);
 }
 
 

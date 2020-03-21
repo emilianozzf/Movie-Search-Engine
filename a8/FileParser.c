@@ -80,7 +80,7 @@ Movie* CreateMovieFromRow(char *data_row) {
   mov->duration = CheckInt(token);
   token = strtok(NULL, pipe);
   const char comma[4] = ",";
-  mov->actor_list = (char**) malloc(sizeof(char*) * 10);
+  mov->actor_list = (char**) malloc(sizeof(char*) * 50);
   token = strtok(token, comma);
   int i = 0;
   while (token != NULL) {
