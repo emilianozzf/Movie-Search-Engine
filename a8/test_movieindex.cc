@@ -57,12 +57,12 @@ TEST(MovieSet, AddOneMovie) {
   ASSERT_EQ(NumElementsInLinkedList(set->movies), 0);
 
   char row[1000];
-  strcpy(row, movie_row_A);
+  snprintf(row, strlen(movie_row_A)+1, "%s", movie_row_A);
   MoviePtr movie = CreateMovieFromRow(row);
   int res = AddMovieToSet(set, movie);
   ASSERT_EQ(res, 0);
   ASSERT_EQ(NumElementsInLinkedList(set->movies), 1);
-  
+
   DestroyMovieSet(set);
 }
 
@@ -76,10 +76,10 @@ TEST(MovieIndex, AddMovieToIndex) {
   // Copying the string from a const to an array
   // (to be more similar to the actual use case)
   char row[1000];
-  strcpy(row, movie_row_A);
+  snprintf(row, strlen(movie_row_A)+1, "%s", movie_row_A);
   // Take a movie
   MoviePtr m1 = CreateMovieFromRow(row);
-  strcpy(row, movie_row_B);
+  snprintf(row, strlen(movie_row_B)+1, "%s", movie_row_B);
   MoviePtr m2 = CreateMovieFromRow(row);
 
   // Create Index

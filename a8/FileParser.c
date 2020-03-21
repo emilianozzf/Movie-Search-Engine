@@ -39,7 +39,7 @@ char* CheckAndAllocateString(char* token) {
   if (strcmp("-", token) == 0) {
     return NULL;
   } else {
-    char *out = (char *) malloc((strlen(token) + 1) * sizeof(char));
+    char *out = (char *) malloc((strlen(token) + 1) * sizeof(token[0]));
     snprintf(out, strlen(token) + 1, "%s", token);
     return out;
   }
@@ -67,7 +67,7 @@ Movie* CreateMovieFromRow(char *data_row) {
     printf("Couldn't create a Movie.\n");
     return NULL;
   }
-  
+
   const char pipe[4] = "|";
   char* token;
   token = strtok(data_row, pipe);
@@ -107,7 +107,7 @@ LinkedList ReadFile(char* filename) {
     char* row = NULL;
     ssize_t read;
     size_t len = 0;
-    
+
     while ((read = getline(&row, &len, cfPtr)) != -1) {
       // Got the line; create a movie from it
       MoviePtr movie = CreateMovieFromRow(row);

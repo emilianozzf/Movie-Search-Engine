@@ -38,32 +38,34 @@ void DestroyNothing(void* thing) {
 
 int main(int argc, char* argv[]) {
   enum IndexField field_to_index;
-  
+
   int o;
   const char *optstring = "s:c:g:a:";
   if ((o = getopt(argc, argv, optstring)) != -1) {
     switch (o) {
       case 's':
-	field_to_index = StarRating;
-	break;
+        field_to_index = StarRating;
+        break;
       case 'c':
-	field_to_index = ContentRating;
+        field_to_index = ContentRating;
         break;
       case 'g':
-	field_to_index = Genre;
-	break;
+        field_to_index = Genre;
+        break;
       case 'a':
-	field_to_index = Actor;
-	break;
+        field_to_index = Actor;
+        break;
       case '?':
-	printf("error optopt: %c\n", optopt);
-	printf("error opterr: %d\n", opterr);
-	break;
+        printf("error optopt: %c\n", optopt);
+        printf("error opterr: %d\n", opterr);
+        break;
     }
   } else {
-    printf("usage: ./example -s/-c/-g/-a data/test (one and only one flag may be provided)\n");
+    printf("usage: ./example -s/-c/-g/-a data/test ");
+    printf("(one and only one flag may be provided)\n");
+    return 0;
   }
-  
+
   char* filename = optarg;
   LinkedList movie_list  = ReadFile(filename);
   Index index =  BuildMovieIndex(movie_list, field_to_index);

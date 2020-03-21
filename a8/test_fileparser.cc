@@ -42,7 +42,7 @@ void DestroyLLMovie(void *payload) {
 TEST(Movie, CreateDestroyMovie) {
   Movie* m1 = CreateMovie();
   ASSERT_TRUE(m1 != NULL);
-  
+
   ASSERT_EQ(m1->content_rating, nullptr);
   ASSERT_EQ(m1->genre, nullptr);
   ASSERT_EQ(m1->actor_list, nullptr);
@@ -71,9 +71,9 @@ TEST(Movie, CreateManualAndDestroyMovie) {
 }
 
 char* MallocString(const char* str) {
-  char* cr = (char*)malloc(sizeof(char) * strlen(str) + 1);
+  char* cr = (char*)malloc(sizeof(str[0]) * strlen(str) + 1);
   snprintf(cr, strlen(str)+1, "%s", str);
-  return cr; 
+  return cr;
 }
 
 TEST(Movie, CreateWithMallocdData) {
@@ -95,7 +95,7 @@ TEST(Movie, CreateWithMallocdData) {
   ASSERT_NE(m1->actor_list[0], nullptr);
   ASSERT_NE(m1->actor_list[1], nullptr);
   ASSERT_NE(m1->actor_list, nullptr);
-  
+
   DestroyMovie(m1);
 }
 
@@ -103,7 +103,7 @@ TEST(Movie, CreateFromRow) {
   // Copying the string from a const to an array
   // (to be more similar to the actual use case)
   char row[1000];
-  snprintf(row, 1000, "%s", movie_row_A);
+  snprintf(row, strlen(movie_row_A)+1, "%s", movie_row_A);
   // Create from a "good" row
 
   Movie* m1 = CreateMovieFromRow(row);
@@ -113,12 +113,11 @@ TEST(Movie, CreateFromRow) {
   ASSERT_EQ(142, m1->duration);
   ASSERT_EQ(0, strcmp(m1->genre, "Crime"));
   //  ASSERT_EQ(-1, m1->actor_list); // TODO: Check actors
-            
-  
-  // TODO: Create from a improper row
 
-  DestroyMovie(m1); 
-  
+
+  // TODO(student): Create from a improper row
+
+  DestroyMovie(m1);
 }
 
 TEST(FileParser, ReadGoodFile) {
@@ -134,7 +133,6 @@ TEST(FileParser, ReadNonexistentFile) {
   // try to read a non-existent file
   LinkedList movie_list = ReadFile(const_cast<char *>("bogus/file"));
   ASSERT_TRUE(movie_list == NULL);
-
 }
 
 TEST(FileParser, ReadBinaryFile) {

@@ -44,13 +44,13 @@ Index BuildMovieIndex(LinkedList movies, enum IndexField field_to_index) {
   if (NumElementsInLinkedList(movies) == 0) {
     return movie_index;
   }
-  
+
   LLIter iter = CreateLLIter(movies);
   Movie* cur_movie;
   LLIterGetPayload(iter, &cur_movie);
 
   int result = AddMovieToIndex(movie_index, cur_movie, field_to_index);
-  
+
   while (LLIterHasNext(iter) == 1) {
     LLIterNext(iter);
     LLIterGetPayload(iter, &cur_movie);
@@ -64,11 +64,11 @@ int ContainsMovie(MovieSet movie_set, Movie* movie) {
   if (NumElementsInLinkedList(movie_set->movies) == 0) {
     return 0;
   }
-  
+
   LLIter iter = CreateLLIter(movie_set->movies);
   Movie* item;
   LLIterGetPayload(iter, &item);
-  
+
   if (item == movie) {
     DestroyLLIter(iter);
     return 1;
@@ -77,7 +77,7 @@ int ContainsMovie(MovieSet movie_set, Movie* movie) {
   while (LLIterHasNext(iter) == 1) {
     LLIterNext(iter);
     LLIterGetPayload(iter, &item);
-    if	(item == movie) {
+    if  (item == movie) {
       DestroyLLIter(iter);
       return 1;
     }
@@ -88,7 +88,7 @@ int ContainsMovie(MovieSet movie_set, Movie* movie) {
 }
 
 char* MallocString(const char* str) {
-  char* cr = (char*) malloc(sizeof(char) * strlen(str) + 1);
+  char* cr = (char*) malloc(sizeof(str[0]) * strlen(str) + 1);
   snprintf(cr, strlen(str)+1, "%s", str);
   return cr;
 }
@@ -104,7 +104,7 @@ Movie* MakeMovieCopy(Movie* movie) {
   char** actors = (char**) malloc(sizeof(char*) * movie->num_actors);
   for (int i = 0; i < movie->num_actors; i++) {
     actors[i] = MallocString(movie->actor_list[i]);
-  } 
+  }
   movie_copy->actor_list = actors;
   return movie_copy;
 }
@@ -117,16 +117,16 @@ int AddMovieActorsToIndex(Index index, Movie *movie) {
     Movie* movie_copy = MakeMovieCopy(movie);
     kvp.key = ComputeKey(movie_copy, Actor, i);
     int res = LookupInHashtable(index, kvp.key, &kvp);
-    
+
     if (res == -1) {
       kvp.value = CreateMovieSet(movie_copy->actor_list[i]);
       PutInHashtable(index, kvp, &old_kvp);
     }
-    
+
     if (ContainsMovie(kvp.value, movie_copy) == 1) {
        continue;
     }
-    
+
     AddMovieToSet((MovieSet)kvp.value, movie_copy);
   }
   DestroyMovie(movie);
@@ -142,22 +142,22 @@ int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
   HTKeyValue old_kvp;
   kvp.key = ComputeKey(movie, field, 0);
   int res = LookupInHashtable(index, kvp.key, &kvp);
-  
+
   if (res == -1) {
     char rating_str[10];
     MovieSet new_movie_set;
-    
+    int length = 10;
     switch (field) {
       case Genre:
-	new_movie_set = CreateMovieSet(movie->genre);
-	break;
+        new_movie_set = CreateMovieSet(movie->genre);
+        break;
       case StarRating:
-        snprintf(rating_str, 10, "%f", movie->star_rating);
+        snprintf(rating_str, length, "%f", movie->star_rating);
         new_movie_set = CreateMovieSet(rating_str);
-	break;
+        break;
       case ContentRating:
         new_movie_set = CreateMovieSet(movie->content_rating);
-	break;
+        break;
     }
     kvp.value = new_movie_set;
     int result = PutInHashtable(index, kvp, &old_kvp);
@@ -172,13 +172,15 @@ int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
 }
 
 
-uint64_t ComputeKey(Movie* movie, enum IndexField which_field, int which_actor) {
+uint64_t ComputeKey(Movie* movie, enum IndexField which_field,
+                    int which_actor) {
   char rating_str[10];
+  int length = 10;
   switch (which_field) {
     case Genre:
       return FNVHash64((unsigned char*)movie->genre, strlen(movie->genre));
     case StarRating:
-      snprintf(rating_str, 10, "%f", movie->star_rating);
+      snprintf(rating_str, length, "%f", movie->star_rating);
       return FNVHash64((unsigned char*)rating_str, strlen(rating_str));
     case ContentRating:
       return FNVHash64((unsigned char*)movie->content_rating,
@@ -194,7 +196,7 @@ uint64_t ComputeKey(Movie* movie, enum IndexField which_field, int which_actor) 
 }
 
 // Removed for simplicity
-//MovieSet GetMovieSet(Index index, const char *term){}
+// MovieSet GetMovieSet(Index index, const char *term){}
 
 int DestroyIndex(Index index) {
   DestroyHashtable(index, &DestroyMovieSetWrapper);

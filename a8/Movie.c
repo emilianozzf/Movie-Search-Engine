@@ -38,12 +38,12 @@ Movie* CreateMovie() {
   mov->duration = -1;
   mov->actor_list = NULL;
   mov->num_actors = 0;
-  
+
   return mov;
 }
 
 void DestroyMovie(Movie* movie) {
-  if (movie->title != NULL){
+  if (movie->title != NULL) {
     free(movie->title);
     movie->title = NULL;
   }
@@ -59,7 +59,7 @@ void DestroyMovie(Movie* movie) {
     for (int i = 0; i < movie->num_actors; i++) {
       if (movie->actor_list[i] != NULL) {
         free(movie->actor_list[i]);
-	movie->actor_list[i] = NULL;
+        movie->actor_list[i] = NULL;
       }
     }
     free(movie->actor_list);

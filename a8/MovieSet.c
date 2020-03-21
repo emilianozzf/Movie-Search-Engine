@@ -44,7 +44,7 @@ MovieSet CreateMovieSet(char *desc) {
     return NULL;
   }
 
-  set->desc = (char*)malloc((strlen(desc) + 1) * sizeof(char));
+  set->desc = (char*)malloc((strlen(desc) + 1) * sizeof(desc[0]));
 
   if (set->desc == NULL) {
     printf("Couldn't malloc for movieSet->desc");
