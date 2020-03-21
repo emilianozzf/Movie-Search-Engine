@@ -1,15 +1,12 @@
-### TODO Please edit the following information in this README
-
-- Name:
-- How many hours did it take you to complete this assignment?
+- Name: Emiliano Zhu
+- How many hours did it take you to complete this assignment? 20 hours.
 - Did you collaborate with any other students/TAs/Professors? (Name them below)
-  - tbd
-  - tbd
+  - None
 - Did you use any external resources? (Cite them below)
-  - tbd
-  - tbd
-- (Optional) What was your favorite part of the assignment?
-- (Optional) How would you improve the assignment?
+  - https://www.geeksforgeeks.org/strtok-strtok_r-functions-c-examples/
+  - https://blog.csdn.net/afei__/article/details/81261879
+- (Optional) What was your favorite part of the assignment? Memory Manipulating.
+- (Optional) How would you improve the assignment? Refactoring code.
 
 See Canvas for all the details! 
 
