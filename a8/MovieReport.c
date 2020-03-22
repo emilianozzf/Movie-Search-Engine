@@ -52,12 +52,12 @@ void OutputMovieSet(MovieSet movie_set) {
 
   LLIter iter = CreateLLIter(movie_set->movies);
   Movie* cur_movie;
-  LLIterGetPayload(iter, &cur_movie);
+  LLIterGetPayload(iter, (void**) &cur_movie);
   printf("  %s\n", cur_movie->title);
 
   while (LLIterHasNext(iter)) {
     LLIterNext(iter);
-    LLIterGetPayload(iter, &cur_movie);
+    LLIterGetPayload(iter, (void**) &cur_movie);
     printf("  %s\n", cur_movie->title);
   }
 

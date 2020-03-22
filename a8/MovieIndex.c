@@ -47,14 +47,14 @@ Index BuildMovieIndex(LinkedList movies, enum IndexField field_to_index) {
 
   LLIter iter = CreateLLIter(movies);
   Movie* cur_movie;
-  LLIterGetPayload(iter, &cur_movie);
+  LLIterGetPayload(iter, (void**) &cur_movie);
 
-  int result = AddMovieToIndex(movie_index, cur_movie, field_to_index);
+  AddMovieToIndex(movie_index, cur_movie, field_to_index);
 
   while (LLIterHasNext(iter) == 1) {
     LLIterNext(iter);
-    LLIterGetPayload(iter, &cur_movie);
-    result = AddMovieToIndex(movie_index, cur_movie, field_to_index);
+    LLIterGetPayload(iter, (void**) &cur_movie);
+    AddMovieToIndex(movie_index, cur_movie, field_to_index);
   }
   DestroyLLIter(iter);
   return movie_index;
@@ -67,7 +67,7 @@ int ContainsMovie(MovieSet movie_set, Movie* movie) {
 
   LLIter iter = CreateLLIter(movie_set->movies);
   Movie* item;
-  LLIterGetPayload(iter, &item);
+  LLIterGetPayload(iter, (void**) &item);
 
   if (item == movie) {
     DestroyLLIter(iter);
@@ -76,7 +76,7 @@ int ContainsMovie(MovieSet movie_set, Movie* movie) {
 
   while (LLIterHasNext(iter) == 1) {
     LLIterNext(iter);
-    LLIterGetPayload(iter, &item);
+    LLIterGetPayload(iter, (void**) &item);
     if  (item == movie) {
       DestroyLLIter(iter);
       return 1;
@@ -158,9 +158,11 @@ int AddMovieToIndex(Index index, Movie *movie, enum IndexField field) {
       case ContentRating:
         new_movie_set = CreateMovieSet(movie->content_rating);
         break;
+      case Actor:
+        break;
     }
     kvp.value = new_movie_set;
-    int result = PutInHashtable(index, kvp, &old_kvp);
+    PutInHashtable(index, kvp, &old_kvp);
   }
 
   if (ContainsMovie(kvp.value, movie) == 1) {

@@ -46,13 +46,13 @@ void DestroyNothing(void* nothing) {
 }
 
 TEST(MovieSet, CreateDestroy) {
-  MovieSet set = CreateMovieSet("My test set");
+  MovieSet set = CreateMovieSet((char*) "My test set");
   ASSERT_NE(set, nullptr);
   DestroyMovieSet(set);
 }
 
 TEST(MovieSet, AddOneMovie) {
-  MovieSet set = CreateMovieSet("My test set");
+  MovieSet set = CreateMovieSet((char*) "My test set");
   ASSERT_NE(set, nullptr);
   ASSERT_EQ(NumElementsInLinkedList(set->movies), 0);
 
