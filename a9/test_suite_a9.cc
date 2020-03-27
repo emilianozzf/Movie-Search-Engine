@@ -185,8 +185,8 @@ TEST(DocumentSet, AddMovieToSet) {
 
   // TODO(adrienne): Check that the right row number are in the doc_index
 
-  //  EXPECT_EQ(DocumentSetContainsDoc(mset, doc_id), 0);
-  //  EXPECT_NE(DocumentSetContainsDoc(mset, 75), 0);
+  EXPECT_EQ(DocumentSetContainsDoc(mset, doc_id), 0);
+  EXPECT_NE(DocumentSetContainsDoc(mset, 75), 0);
 
   // Destroy movieSet
   DestroyDocumentSet(mset);

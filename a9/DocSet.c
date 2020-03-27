@@ -71,7 +71,8 @@ int AddDocInfoToSet(DocumentSet set,  uint64_t docId, int rowId) {
 
 int DocumentSetContainsDoc(DocumentSet set, uint64_t docId) {
   // STEP 5: Implement DocumentSetContainsDoc
-  return -1;
+  HTKeyValue result;
+  return LookupInHashtable(set->doc_index, docId, &result);
 }
 
 void PrintOffsetList(LinkedList list) {
