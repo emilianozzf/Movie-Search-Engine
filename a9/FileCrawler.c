@@ -28,12 +28,30 @@
 
 
 void CrawlFilesToMap(const char *dir, DocIdMap map) {
-  // STEP 3: Implement the file crawler.
-  // Use namelist (declared below) to find files and put in map.
-  // NOTE: There may be nested folders.
-  // Be sure to lookup how scandir works. Don't forget about memory use.
   struct stat s;
-  struct dirent **namelist;
+  struct dirent **name_list;
   int n;
-  n = scandir(dir, &namelist, 0, alphasort);
+  char str_tmp[256];
+  n = scandir(dir, &name_list, 0, alphasort);
+  
+  if (n < 0) {
+    perror("not found\n");
+  } else {
+    for (int i = 0; i < n; i++) {
+      snprintf(str_tmp, sizeof(str_tmp), "%s/%s", dir, name_list[i]->d_name);
+      if ((stat(str_tmp, &s) == 0)) {
+	if(S_ISDIR(s.st_mode)) {
+	  if ((strcmp(name_list[i]->d_name, ".") != 0) && (strcmp(name_list[i]->d_name, "..") != 0)) {
+            CrawlFilesToMap(str_tmp, map);
+	  }
+	} else if (S_ISREG(s.st_mode)) {
+	  char* file_name = (char*)malloc(sizeof(char) * 256);
+	  snprintf(file_name, 256, "%s", str_tmp);
+          PutFileInMap(file_name, map);
+	}
+      }
+      free(name_list[i]);
+    }
+    free(name_list);
+  }
 }
