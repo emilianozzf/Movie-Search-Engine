@@ -24,9 +24,48 @@
 #include "Hashtable.h"
 #include "Util.h"
 
+int ContainsCertainRow(LinkedList row_ids, int rowId) {
+  if (NumElementsInLinkedList(row_ids) == 0) {
+    return 0;
+  }
+  
+  LLIter iter = CreateLLIter(row_ids);
+  int* payload;
+  LLIterGetPayload(iter, (void**)&payload);
+  if (&payload == rowId) {
+    return 1;
+    DestroyLLIter(iter);
+  }
+  while (LLIterHasNext(iter) == 1) {
+    LLIterNext(iter);
+    LLIterGetPayload(iter, (void**)&payload);
+    if	(&payload == rowId) {
+      return 1;
+      DestroyLLIter(iter);
+    }
+  }
+  DestroyLLIter(iter);
+  return 0;
+}
+
 int AddDocInfoToSet(DocumentSet set,  uint64_t docId, int rowId) {
-  // STEP 4: Implement AddDocInfoToSet.
-  // Make sure there are no duplicate rows or docIds.
+  HTKeyValue kvp;
+  HTKeyValue old_kvp;
+  kvp.key = docId;
+  int res = LookupInHashtable(set->doc_index, kvp.key, &kvp);
+  
+  if (res == -1) {
+    LinkedList row_ids = CreateLinkedList();
+    kvp.value = (void*)row_ids;
+    PutInHashtable(set->doc_index, kvp, &old_kvp);
+  }
+
+  int* row_id_ptr = (int*)malloc(sizeof(int));
+  *row_id_ptr = rowId;
+  if (ContainsCertainRow((LinkedList)kvp.value, rowId) == 0) {
+    InsertLinkedList((LinkedList)kvp.value, row_id_ptr);
+    return 0;
+  }
   return -1;
 }
 
@@ -64,7 +103,6 @@ DocumentSet CreateDocumentSet(char *desc) {
   set->doc_index = CreateHashtable(16);
   return set;
 }
-
 
 void DestroyOffsetList(void *val) {
   LinkedList list = (LinkedList)val;
