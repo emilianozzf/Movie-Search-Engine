@@ -183,8 +183,6 @@ TEST(DocumentSet, AddMovieToSet) {
   AddDocInfoToSet(mset, doc_id + 1, row_id);
   EXPECT_EQ(NumElemsInHashtable(mset->doc_index), 2);
 
-  // TODO(adrienne): Check that the right row number are in the doc_index
-
   EXPECT_EQ(DocumentSetContainsDoc(mset, doc_id), 0);
   EXPECT_NE(DocumentSetContainsDoc(mset, 75), 0);
 
@@ -246,7 +244,6 @@ TEST(FileCrawler, CrawlFilesToMap) {
 
   EXPECT_EQ(NumElemsInHashtable(docs), 10);
 
-  // TODO: This assumes that the ids are unique, starting at 0. 
   int ids[11] = {0};
 
   HTIter iter = CreateHashtableIterator(docs);
@@ -254,13 +251,11 @@ TEST(FileCrawler, CrawlFilesToMap) {
 
   while (HTIteratorHasMore(iter) != 0) {
     HTIteratorGet(iter, &kv);
-    //   printf("docId: %d\tfilename: %s\n", kv->key, kv->value);
     ids[kv.key]++;
     HTIteratorNext(iter);
   }
   // Get the last
   HTIteratorGet(iter, &kv);
-  //   printf("docId: %d\tfilename: %s\n", kv->key, kv->value);
   ids[kv.key]++;
 
   // Should be a unique id for each file.

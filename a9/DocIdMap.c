@@ -52,7 +52,7 @@ int PutFileInMap(char *filename, DocIdMap map) {
 }
 
 DocIdIter CreateDocIdIterator(DocIdMap map) {
-  HTIter iter = CreateHashtableIterator(map);
+  DocIdIter iter = (DocIdIter)CreateHashtableIterator(map);
   return iter;
 }
 

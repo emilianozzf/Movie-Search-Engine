@@ -24,7 +24,7 @@
 #include "Hashtable.h"
 #include "Util.h"
 
-int ContainsCertainRow(LinkedList row_ids, int rowId) {
+int ContainsCertainRow(LinkedList row_ids, int row_id) {
   if (NumElementsInLinkedList(row_ids) == 0) {
     return 0;
   }
@@ -32,14 +32,14 @@ int ContainsCertainRow(LinkedList row_ids, int rowId) {
   LLIter iter = CreateLLIter(row_ids);
   int* payload;
   LLIterGetPayload(iter, (void**)&payload);
-  if (&payload == rowId) {
+  if (&payload == row_id) {
     return 1;
     DestroyLLIter(iter);
   }
   while (LLIterHasNext(iter) == 1) {
     LLIterNext(iter);
     LLIterGetPayload(iter, (void**)&payload);
-    if	(&payload == rowId) {
+    if	(&payload == row_id) {
       return 1;
       DestroyLLIter(iter);
     }
@@ -48,21 +48,21 @@ int ContainsCertainRow(LinkedList row_ids, int rowId) {
   return 0;
 }
 
-int AddDocInfoToSet(DocumentSet set,  uint64_t docId, int rowId) {
+int AddDocInfoToSet(DocumentSet set,  uint64_t doc_id, int row_id) {
   HTKeyValue kvp;
   HTKeyValue old_kvp;
-  kvp.key = docId;
+  kvp.key = doc_id;
   int res = LookupInHashtable(set->doc_index, kvp.key, &kvp);
   
   if (res == -1) {
     LinkedList row_ids = CreateLinkedList();
-    kvp.value = (void*)row_ids;
+    kvp.value = row_ids;
     PutInHashtable(set->doc_index, kvp, &old_kvp);
   }
 
   int* row_id_ptr = (int*)malloc(sizeof(int));
-  *row_id_ptr = rowId;
-  if (ContainsCertainRow((LinkedList)kvp.value, rowId) == 0) {
+  *row_id_ptr = row_id;
+  if (ContainsCertainRow((LinkedList)kvp.value, row_id) == 0) {
     InsertLinkedList((LinkedList)kvp.value, row_id_ptr);
     return 0;
   }
@@ -70,7 +70,6 @@ int AddDocInfoToSet(DocumentSet set,  uint64_t docId, int rowId) {
 }
 
 int DocumentSetContainsDoc(DocumentSet set, uint64_t docId) {
-  // STEP 5: Implement DocumentSetContainsDoc
   HTKeyValue result;
   return LookupInHashtable(set->doc_index, docId, &result);
 }

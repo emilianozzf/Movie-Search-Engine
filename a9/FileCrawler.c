@@ -38,7 +38,11 @@ void CrawlFilesToMap(const char *dir, DocIdMap map) {
     perror("not found\n");
   } else {
     for (int i = 0; i < n; i++) {
-      snprintf(str_tmp, sizeof(str_tmp), "%s/%s", dir, name_list[i]->d_name);
+      if (dir[strlen(dir)-1] == '/') {
+        snprintf(str_tmp, sizeof(str_tmp), "%s%s", dir, name_list[i]->d_name);
+      } else {
+        snprintf(str_tmp, sizeof(str_tmp), "%s/%s", dir, name_list[i]->d_name);
+      }
       if ((stat(str_tmp, &s) == 0)) {
 	if(S_ISDIR(s.st_mode)) {
 	  if ((strcmp(name_list[i]->d_name, ".") != 0) && (strcmp(name_list[i]->d_name, "..") != 0)) {
