@@ -17,6 +17,7 @@
  */
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "DocIdMap.h"
 #include "Hashtable.h"
 
@@ -34,13 +35,19 @@ void DestroyDocIdMap(DocIdMap map) {
 }
 
 int PutFileInMap(char *filename, DocIdMap map) {
-  // STEP 1: Put File in Map
-  // Ensure that each file/entry has a unique ID as a key
-  // Insert the id/filename into the Hashtable.
-  // If PutInHashtable returns 2 (there's a duplicate ID),
-  // check if the filenames are the same. If not,
-  // create a new ID for the file and insert it.
-
+  HTKeyValue kvp;
+  HTKeyValue old_kvp;
+  kvp.key = (uint64_t) (NumElemsInHashtable(map) + 1);
+  kvp.value = filename;
+  int res = PutInHashtable(map, kvp, &old_kvp);
+  while (res == 2) {
+    if (strcmp(filename, (char*)old_kvp.value) != 0) {
+      kvp.key += 1;
+      res = PutInHashtable(map, kvp, &old_kvp);
+    } else {
+      return 0;
+    }
+  }
   return 0;
 }
 
@@ -54,8 +61,10 @@ void DestroyDocIdIterator(DocIdIter iter) {
 }
 
 char *GetFileFromId(DocIdMap docs, int docId) {
-  // STEP 2: Return the pointer to the filename
-  //  that corresponds to the given docid.
-  // If there's an issue of some kind, return NULL.
-  return "FAIL";
+  HTKeyValue result;
+  int res = LookupInHashtable(docs, (uint64_t)docId, &result);
+  if (res == 0) {
+    return (char*)result.value;
+  }
+  return NULL;
 }
