@@ -29,8 +29,30 @@ SearchResultIter CreateSearchResultIter(DocumentSet set) {
   SearchResultIter iter =
     (SearchResultIter)malloc(sizeof(struct searchResultIter));
 
-    // STEP 7: Implement the initialization of the iter.
+  if (iter == NULL) {
+    printf("cannot allocate memory for search restult iterator\n");
+    return NULL;
+  }
 
+  HTIter doc_iter  = CreateHashtableIterator(set->doc_index);
+  if (doc_iter == NULL) {
+    printf("cannot allocate memory for document set iterator\n");
+    DestroySearchResultIter(iter);
+    return NULL;
+  }
+  iter->doc_iter = doc_iter;
+
+  HTKeyValue dest;
+  int res = HTIteratorGet(iter->doc_iter, &dest);
+  iter->cur_doc_id = dest.key;
+  LLIter offset_iter = CreateLLIter(dest.value);
+  if (offset_iter == NULL) {
+    printf("cannot allocate memory for offset iterator\n");
+    DestroySearchResultIter(iter);
+    return NULL;
+  }
+  iter->offset_iter = offset_iter;
+  
   return iter;
 }
 
