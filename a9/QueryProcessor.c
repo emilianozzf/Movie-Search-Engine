@@ -87,7 +87,26 @@ int SearchResultGet(SearchResultIter iter, SearchResult output) {
 }
 
 int SearchResultNext(SearchResultIter iter) {
-  // STEP 8: Implement SearchResultNext
+
+  int res = LLIterNext(iter->offset_iter);
+  if (res == 0) {
+    return 0;
+  }
+
+  res = HTIteratorNext(iter->doc_iter);
+  if (res == 0) {
+     HTKeyValue dest;
+     res = HTIteratorGet(iter->doc_iter, &dest);
+     iter->cur_doc_id = dest.key;
+     LLIter offset_iter = CreateLLIter(dest.value);
+     if (offset_iter == NULL) {
+       printf("cannot allocate memory for offset iterator\n");
+       DestroySearchResultIter(iter);
+       return NULL;
+     }
+     iter->offset_iter = offset_iter;
+  }
+  
   return 0;
 }
 
