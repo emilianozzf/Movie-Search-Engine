@@ -32,10 +32,16 @@
  *
  */
 int ParseTheFiles(DocIdMap docs, MovieTitleIndex index) {
-  // STEP 6: Implement ParseTheFiles.
-  // Iterate through all the docs, and add to the index,
-  // utilizing IndexTheFile.
-  return -1; 
+  DocIdIter iter = CreateDocIdIterator(docs);
+  int num_elements = NumElemsInHashtable(docs);
+  int num_records = 0;
+  for (int i = 0; i < num_elements; i++) {
+    char* file_name = GetFileFromId(docs, i+1);
+    num_records += IndexTheFile(file_name, i+1, index);
+    HTIteratorNext(iter);
+  }
+  DestroyDocIdIterator(iter);
+  return num_records;
 }
 
 
