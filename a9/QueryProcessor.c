@@ -82,7 +82,8 @@ SearchResultIter FindMovies(MovieTitleIndex index, char *term) {
 
 
 int SearchResultGet(SearchResultIter iter, SearchResult output) {
-  // STEP 9: Implement SearchResultGet
+  output->doc_id;
+  LLIterGetPayload(iter->offset_iter, &output->row_id);
   return 0;
 }
 
