@@ -214,8 +214,12 @@ TEST(DocIdMap, Full) {
   EXPECT_EQ(kvp2.key, 2);
   EXPECT_STREQ((const char*)kvp2.value, "file2");
 
-  //char *out = GetFileFromId(docs, 1);
-  //EXPECT_STREQ(out, "file1");
+  char* out = GetFileFromId(docs, 1);
+  EXPECT_STREQ(out, "file1");
+  out = GetFileFromId(docs, 2);
+  EXPECT_STREQ(out, "file2");
+  out = GetFileFromId(docs, 0);
+  EXPECT_EQ(out, nullptr);
 
   //DocIdIter docIter = CreateDocIdIterator(docs);
 

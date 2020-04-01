@@ -56,11 +56,11 @@ void DestroyDocIdIterator(DocIdIter iter) {
   DestroyHashtableIterator(iter);
 }
 
-char *GetFileFromId(DocIdMap docs, int docId) {
+char* GetFileFromId(DocIdMap docs, int doc_id) {
   HTKeyValue result;
-  int res = LookupInHashtable(docs, (uint64_t)docId, &result);
+  int res = LookupInHashtable(docs, (uint64_t) doc_id, &result);
   if (res == 0) {
-    return (char*)result.value;
+    return (char*) result.value;
   }
   return NULL;
 }
