@@ -32,15 +32,12 @@
  *
  */
 int ParseTheFiles(DocIdMap docs, MovieTitleIndex index) {
-  DocIdIter iter = CreateDocIdIterator(docs);
-  int num_elements = NumElemsInHashtable(docs);
+  int num_files = NumElemsInHashtable(docs);
   int num_records = 0;
-  for (int i = 0; i < num_elements; i++) {
+  for (int i = 0; i < num_files; i++) {
     char* file_name = GetFileFromId(docs, i+1);
     num_records += IndexTheFile(file_name, i+1, index);
-    HTIteratorNext(iter);
   }
-  DestroyDocIdIterator(iter);
   return num_records;
 }
 

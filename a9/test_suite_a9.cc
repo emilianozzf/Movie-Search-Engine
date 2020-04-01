@@ -41,18 +41,9 @@ const char* kMovie4 = "tt0003620|short|Among the Mourners|Among the Mourners|0|1
 
 
 TEST(DirectoryParser, IndexTheFile_OneFile) {
-  //int IndexTheFile(char *file, uint64_t docId, Index index);
-  char *f1 = (char*)(malloc(sizeof(char)*30));
+  char* f1 = (char*) (malloc(sizeof(char)*30));
   strcpy(f1, "data_tiny/fourth/fifth/tinyaa");
-  // program to get unique words in this file:
-  // awk 'BEGIN { FS = "|" } ; { print $3 }' data_tiny/fourth/fifth/tinyaa  |
-  //   awk 'BEGIN{FS=" ";OFS="\n"}; {for (i=1;i<=NF;i++){print $i}; };' |
-  //   sort | uniq | wc -l
-  // 30 unique words
-  // Check for:
-  // coffee, something, or, the (2 different records), of, lucky
 
-  // Create an index
   MovieTitleIndex ind = CreateMovieTitleIndex();
   ASSERT_NE(ind, nullptr);
 
@@ -96,15 +87,10 @@ TEST(DirectoryParser, IndexTheFile_OneFile) {
   free(f1);
 }
 
-// TODO(adrienne): add a check to make sure the fisrt and/or last movies aren't added twice.
 TEST(DirectoryParser, ParseTheFiles) {
-  // Given a docIdMap and an index,
-  // the index should contain the info.
   DocIdMap docs = CreateDocIdMap();
   ASSERT_NE(docs, nullptr);
-  // Some files
-  // Not ideal; opportunity for improvement next time around.
-  // TODO(adrienne): Figure how to improve.
+
   char *f1 = (char*)(malloc(sizeof(char)*30));
   strcpy(f1, "data_tiny/fourth/fifth/tinyaa");
   PutFileInMap(f1, docs);
@@ -144,7 +130,6 @@ TEST(DirectoryParser, ParseTheFiles) {
 
   DestroyMovieTitleIndex(ind);
   DestroyDocIdMap(docs);
-  // Not freeing f1 because DestroyDocIdMap does
 }
 
 TEST(DocumentSet, CreateDestroy) {
@@ -343,9 +328,7 @@ TEST(MovieTitleIndex, GetDocumentSet) {
   DestroyMovie(m3);
 }
 
-TEST(QueryProcessor, FindMovies) {
-
-  
+TEST(QueryProcessor, FindMovies) {  
 }
 
 
