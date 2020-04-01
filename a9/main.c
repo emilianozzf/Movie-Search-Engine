@@ -47,7 +47,7 @@ int CreateMovieFromFileRow(char *file, long row_id, Movie** movie) {
       if (res == NULL) break;
       i++;
     }
-    char* res = fgets(row, kMaxRowLength, cfPtr);
+    fgets(row, kMaxRowLength, cfPtr);
     // Got the line; create a movie from it
     *movie = CreateMovieFromRow(row);
     Assert007(movie != NULL);

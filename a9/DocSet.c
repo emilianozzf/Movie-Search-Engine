@@ -32,14 +32,14 @@ int ContainsCertainRow(LinkedList row_ids, int row_id) {
   LLIter iter = CreateLLIter(row_ids);
   int* payload;
   LLIterGetPayload(iter, (void**) &payload);
-  if (&payload == row_id) {
+  if (*payload == row_id) {
     DestroyLLIter(iter);
     return 1;
   }
   while (LLIterHasNext(iter) == 1) {
     LLIterNext(iter);
     LLIterGetPayload(iter, (void**) &payload);
-    if	(&payload == row_id) {
+    if	(*payload == row_id) {
       DestroyLLIter(iter);
       return 1;
     }
@@ -66,6 +66,7 @@ int AddDocInfoToSet(DocumentSet set,  uint64_t doc_id, int row_id) {
     InsertLinkedList((LinkedList)kvp.value, row_id_ptr);
     return 0;
   }
+  free(row_id_ptr);
   return -1;
 }
 

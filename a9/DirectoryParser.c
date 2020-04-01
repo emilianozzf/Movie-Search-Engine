@@ -35,6 +35,7 @@ int ParseTheFiles(DocIdMap docs, MovieTitleIndex index) {
   int num_files = NumElemsInHashtable(docs);
   int num_records = 0;
   for (int i = 0; i < num_files; i++) {
+    printf("processing file: %d\n", i+1);
     char* file_name = GetFileFromId(docs, i+1);
     num_records += IndexTheFile(file_name, i+1, index);
   }

@@ -27,48 +27,28 @@
 
 SearchResultIter CreateSearchResultIter(DocumentSet set) {
   SearchResultIter iter =
-    (SearchResultIter)malloc(sizeof(struct searchResultIter));
+    (SearchResultIter) malloc(sizeof(struct searchResultIter));
 
   if (iter == NULL) {
     printf("cannot allocate memory for search restult iterator\n");
     return NULL;
   }
-
-  HTIter doc_iter  = CreateHashtableIterator(set->doc_index);
-  if (doc_iter == NULL) {
-    printf("cannot allocate memory for document set iterator\n");
-    DestroySearchResultIter(iter);
-    return NULL;
-  }
-  iter->doc_iter = doc_iter;
+  iter->doc_iter = CreateHashtableIterator(set->doc_index);
 
   HTKeyValue dest;
-  int res = HTIteratorGet(iter->doc_iter, &dest);
+  HTIteratorGet(iter->doc_iter, &dest);
   iter->cur_doc_id = dest.key;
-  LLIter offset_iter = CreateLLIter(dest.value);
-  if (offset_iter == NULL) {
-    printf("cannot allocate memory for offset iterator\n");
-    DestroySearchResultIter(iter);
-    return NULL;
-  }
-  iter->offset_iter = offset_iter;
-  
+  iter->offset_iter = CreateLLIter(dest.value);
   return iter;
 }
 
 void DestroySearchResultIter(SearchResultIter iter) {
-  // Destroy LLIter
   if (iter->offset_iter != NULL) {
     DestroyLLIter(iter->offset_iter);
   }
-
-  // Destroy doc_iter
   DestroyHashtableIterator(iter->doc_iter);
-
   free(iter);
 }
-
-
 
 SearchResultIter FindMovies(MovieTitleIndex index, char *term) {
   DocumentSet set = GetDocumentSet(index, term);
@@ -82,13 +62,14 @@ SearchResultIter FindMovies(MovieTitleIndex index, char *term) {
 
 
 int SearchResultGet(SearchResultIter iter, SearchResult output) {
-  output->doc_id;
-  LLIterGetPayload(iter->offset_iter, &output->row_id);
+  output->doc_id = iter->cur_doc_id;
+  int* payload;
+  LLIterGetPayload(iter->offset_iter, (void**) &payload);
+  output->row_id = *payload;
   return 0;
 }
 
 int SearchResultNext(SearchResultIter iter) {
-
   int res = LLIterNext(iter->offset_iter);
   if (res == 0) {
     return 0;
@@ -96,22 +77,17 @@ int SearchResultNext(SearchResultIter iter) {
 
   res = HTIteratorNext(iter->doc_iter);
   if (res == 0) {
-     HTKeyValue dest;
-     res = HTIteratorGet(iter->doc_iter, &dest);
-     iter->cur_doc_id = dest.key;
-     LLIter offset_iter = CreateLLIter(dest.value);
-     if (offset_iter == NULL) {
-       printf("cannot allocate memory for offset iterator\n");
-       DestroySearchResultIter(iter);
-       return NULL;
-     }
-     iter->offset_iter = offset_iter;
+    DestroyLLIter(iter->offset_iter);
+    HTKeyValue dest;
+    res = HTIteratorGet(iter->doc_iter, &dest);
+    iter->cur_doc_id = dest.key;
+    iter->offset_iter = CreateLLIter(dest.value);
+    return 0;
   }
-  
-  return 0;
+
+  return -1;
 }
 
-// Return 0 if no more
 int SearchResultIterHasMore(SearchResultIter iter) {
   if (iter->doc_iter == NULL) {
     return 0;
@@ -119,6 +95,5 @@ int SearchResultIterHasMore(SearchResultIter iter) {
   if (LLIterHasNext(iter->offset_iter) == 0) {
     return (HTIteratorHasMore(iter->doc_iter));
   }
-
   return 1;
 }

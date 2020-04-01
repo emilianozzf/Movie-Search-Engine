@@ -33,7 +33,8 @@ void CrawlFilesToMap(const char *dir, DocIdMap map) {
   int n;
   n = scandir(dir, &name_list, 0, alphasort);
   char str_tmp[256];
-
+  printf("crawling dir: %s\n", dir);
+  
   if (n < 0) {
     perror("not found\n");
   } else {
@@ -47,11 +48,14 @@ void CrawlFilesToMap(const char *dir, DocIdMap map) {
       if ((stat(str_tmp, &s) == 0)) {
 	if (S_ISDIR(s.st_mode)) {
 	  if ((strcmp(name_list[i]->d_name, ".") != 0) && (strcmp(name_list[i]->d_name, "..") != 0)) {
-            CrawlFilesToMap(str_tmp, map);
+	    char dir_name[256];
+	    snprintf(dir_name, 256, "%s/", str_tmp);
+            CrawlFilesToMap(dir_name, map);
 	  }
 	} else if (S_ISREG(s.st_mode)) {
 	  char* file_name = (char*) malloc(sizeof(char) * 256);
 	  snprintf(file_name, 256, "%s", str_tmp);
+	  printf("adding file to map: %s\n", file_name);
           PutFileInMap(file_name, map);
 	}
       }
