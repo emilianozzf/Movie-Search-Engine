@@ -257,74 +257,58 @@ TEST(FileCrawler, CrawlFilesToMap) {
 }
 
 TEST(MovieTitleIndex, Full) {
-  // Create a movie index
   MovieTitleIndex ind = CreateMovieTitleIndex();
   EXPECT_EQ(NumElemsInHashtable(ind->ht), 0);
-  
-  // Add some movies to the index
-  Movie *m1 = CreateMovie();
-  char* title = (char*)(malloc(sizeof(char)*50));
-  strcpy(title, "Sleepless in Seattle");
 
+  Movie* m1 = CreateMovie();
+  char* title = (char*) (malloc(sizeof(char)*50));
+  strcpy(title, "Sleepless in Seattle");
   m1->title = title;
   AddMovieTitleToIndex(ind, m1, 1, 19);
   EXPECT_EQ(NumElemsInHashtable(ind->ht), 3);
-  
-  // Check the indices
+
   DocumentSet set = GetDocumentSet(ind, "seattle");
   EXPECT_STREQ(set->desc, "seattle");
   EXPECT_EQ(NumElemsInHashtable(set->doc_index), 1);
   HTKeyValue kvp;
   LookupInHashtable(set->doc_index, 1, &kvp);
-
   EXPECT_EQ(NumElementsInLinkedList((LinkedList)kvp.value), 1u);
-  EXPECT_EQ(NumElemsInHashtable(ind->ht), 3);
 
   // ==========================
   // Second Movie
-    
-  Movie *m2 = CreateMovie();
-  char* title2 = (char*)(malloc(sizeof(char)*50));
+
+  Movie* m2 = CreateMovie();
+  char* title2 = (char*) (malloc(sizeof(char)*50));
   strcpy(title2, "For the love of the Foo. In Foo not Foo.");
   int doc_id2 = 42;
   int row_id2 = 4;
-  
   m2->title = title2;
-  // Index, Movie, doc_id, row_id
   AddMovieTitleToIndex(ind, m2, doc_id2, row_id2); 
   EXPECT_EQ(NumElemsInHashtable(ind->ht), 9);
 
   DocumentSet set2 = GetDocumentSet(ind, "foo.");
-  // Should not find anything with a punctuation
   ASSERT_EQ(set2, nullptr);
 
   set2 = GetDocumentSet(ind, "foo");
   ASSERT_NE(set2, nullptr);
   EXPECT_EQ(NumElemsInHashtable(set2->doc_index), 1);
   EXPECT_STREQ(set2->desc, "foo");
-  
+
   DocumentSet set3 = GetDocumentSet(ind, "in");
   ASSERT_NE(set3, nullptr);
   EXPECT_EQ(NumElemsInHashtable(set3->doc_index), 2);
   EXPECT_STREQ(set3->desc, "in");
-  
+
   DestroyMovieTitleIndex(ind);
   DestroyMovie(m1);
   DestroyMovie(m2);
-
-  //  free(title);
-  //free(title2);
 }
 
 
 TEST(MovieTitleIndex, GetDocumentSet) {
-  // TODO: Implement this test.
-
-  // Create a movie index
   MovieTitleIndex ind = CreateMovieTitleIndex();
   EXPECT_EQ(NumElemsInHashtable(ind->ht), 0);
-  
-  // Add some movies to the index
+
   Movie *m1 = CreateMovie();
   SetMovieTitle(m1, "Sleepless in Seattle");
   AddMovieTitleToIndex(ind, m1, 1, 19);
@@ -332,19 +316,17 @@ TEST(MovieTitleIndex, GetDocumentSet) {
 
   // ==========================
   // Second Movie
-    
+
   Movie *m2 = CreateMovie();
   int doc_id2 = 42;
   int row_id2 = 4;  
   SetMovieTitle(m2, "For the love of the Foo. In Foo not Foo.");
   AddMovieTitleToIndex(ind, m2, doc_id2, row_id2);
   EXPECT_EQ(NumElemsInHashtable(ind->ht), 9);
-  
+
   Movie* m3 = CreateMovieFromRow(kMovie2);
   AddMovieTitleToIndex(ind, m3, doc_id2, row_id2 + 1);
   EXPECT_EQ(NumElemsInHashtable(ind->ht), 11);
-  
-  // Add a bunch of movies with different vals for the index
 
   // Get the set
   DocumentSet set = GetDocumentSet(ind, "seattle");
@@ -355,22 +337,11 @@ TEST(MovieTitleIndex, GetDocumentSet) {
   EXPECT_EQ(NumElemsInHashtable(set->doc_index), 2);
   EXPECT_STREQ(set->desc, "in");
 
-  // TODO: Check that the movies are all in the set
-
-
-  // DestroyDocumentSet(set);
-
-    
-  // Destroy the movie index
   DestroyMovieTitleIndex(ind);
-    DestroyMovie(m1);
-    DestroyMovie(m2);
-    DestroyMovie(m3);
-  
+  DestroyMovie(m1);
+  DestroyMovie(m2);
+  DestroyMovie(m3);
 }
-
-
-
 
 TEST(QueryProcessor, FindMovies) {
 
