@@ -221,21 +221,18 @@ TEST(DocIdMap, Full) {
   out = GetFileFromId(docs, 0);
   EXPECT_EQ(out, nullptr);
 
-  //DocIdIter docIter = CreateDocIdIterator(docs);
+  DocIdIter docIter = CreateDocIdIterator(docs);
+  int numItems = 0;
+  while (HTIteratorHasMore(docIter) != 0) {
+    HTKeyValue kvp3;
+    HTIteratorGet(docIter, &kvp3);
+    EXPECT_TRUE(numItems < 2);
+    numItems++;
+    HTIteratorNext(docIter);
+  }
+  EXPECT_EQ(numItems, 1);
 
-  //int numItems = 0;
-  //while (HTIteratorHasMore(docIter) != 0) {
-  //HTKeyValue kvp3;
-  //HTIteratorGet(docIter, &kvp3);
-  //EXPECT_TRUE(numItems < 2);
-  //numItems++;
-  //HTIteratorNext(docIter);
-  //}
-
-  //EXPECT_EQ(numItems, 1); // Last element not counted
-
-  //DestroyDocIdIterator(docIter);
-
+  DestroyDocIdIterator(docIter);
   DestroyDocIdMap(docs);
 }
 
