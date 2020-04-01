@@ -88,7 +88,6 @@ int AddMovieTitleToIndex(MovieTitleIndex index,
   }
   free(free_rest);
   return 0;
-
 }
 DocumentSet GetDocumentSet(MovieTitleIndex index, const char *term) {
   HTKeyValue kvp;
