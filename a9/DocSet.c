@@ -31,17 +31,17 @@ int ContainsCertainRow(LinkedList row_ids, int row_id) {
   
   LLIter iter = CreateLLIter(row_ids);
   int* payload;
-  LLIterGetPayload(iter, (void**)&payload);
+  LLIterGetPayload(iter, (void**) &payload);
   if (&payload == row_id) {
-    return 1;
     DestroyLLIter(iter);
+    return 1;
   }
   while (LLIterHasNext(iter) == 1) {
     LLIterNext(iter);
-    LLIterGetPayload(iter, (void**)&payload);
+    LLIterGetPayload(iter, (void**) &payload);
     if	(&payload == row_id) {
-      return 1;
       DestroyLLIter(iter);
+      return 1;
     }
   }
   DestroyLLIter(iter);
@@ -60,7 +60,7 @@ int AddDocInfoToSet(DocumentSet set,  uint64_t doc_id, int row_id) {
     PutInHashtable(set->doc_index, kvp, &old_kvp);
   }
 
-  int* row_id_ptr = (int*)malloc(sizeof(int));
+  int* row_id_ptr = (int*) malloc(sizeof(int));
   *row_id_ptr = row_id;
   if (ContainsCertainRow((LinkedList)kvp.value, row_id) == 0) {
     InsertLinkedList((LinkedList)kvp.value, row_id_ptr);
@@ -87,14 +87,14 @@ void PrintOffsetList(LinkedList list) {
 
 
 DocumentSet CreateDocumentSet(char *desc) {
-  DocumentSet set = (DocumentSet)malloc(sizeof(struct docSet));
+  DocumentSet set = (DocumentSet) malloc(sizeof(struct docSet));
   if (set == NULL) {
-    // Out of memory
     printf("Couldn't malloc for movieSet %s\n", desc);
     return NULL;
   }
+
   int len = strlen(desc);
-  set->desc = (char*)malloc((len + 1) *  sizeof(char));
+  set->desc = (char*) malloc((len + 1) * sizeof(char));
   if (set->desc == NULL) {
     printf("Couldn't malloc for movieSet->desc");
     return NULL;

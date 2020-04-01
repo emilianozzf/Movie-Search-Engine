@@ -148,19 +148,16 @@ TEST(DirectoryParser, ParseTheFiles) {
 }
 
 TEST(DocumentSet, CreateDestroy) {
-  // Create a movieSet
   DocumentSet mset = CreateDocumentSet(((char*)"example"));
   ASSERT_NE(mset, nullptr);
   ASSERT_STREQ(mset->desc, "example");
   ASSERT_NE(mset->doc_index, nullptr);
   ASSERT_EQ(NumElemsInHashtable(mset->doc_index), 0);
 
-  // Destroy movieSet
   DestroyDocumentSet(mset);
 }
 
 TEST(DocumentSet, AddMovieToSet) {
-  // Create a movieSet
   DocumentSet mset = CreateDocumentSet(((char*)"example"));
   ASSERT_NE(mset, nullptr);
   ASSERT_STREQ(mset->desc, "example");
@@ -171,13 +168,12 @@ TEST(DocumentSet, AddMovieToSet) {
   int row_id = 15;
 
   AddDocInfoToSet(mset, doc_id, row_id);
-
   EXPECT_EQ(NumElemsInHashtable(mset->doc_index), 1);
 
-
-  // Add a movie with the same doc_id, should not have more docs
+  AddDocInfoToSet(mset, doc_id, row_id);
+  EXPECT_EQ(NumElemsInHashtable(mset->doc_index), 1);
+  
   AddDocInfoToSet(mset, doc_id, row_id + 1);
-
   EXPECT_EQ(NumElemsInHashtable(mset->doc_index), 1);
 
   AddDocInfoToSet(mset, doc_id + 1, row_id);
@@ -186,7 +182,6 @@ TEST(DocumentSet, AddMovieToSet) {
   EXPECT_EQ(DocumentSetContainsDoc(mset, doc_id), 0);
   EXPECT_NE(DocumentSetContainsDoc(mset, 75), 0);
 
-  // Destroy movieSet
   DestroyDocumentSet(mset);
 }
 
