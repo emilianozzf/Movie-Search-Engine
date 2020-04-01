@@ -237,29 +237,23 @@ TEST(DocIdMap, Full) {
 }
 
 TEST(FileCrawler, CrawlFilesToMap) {
-  // Create a DocIdMap
   DocIdMap docs = CreateDocIdMap();
-  // Choose a directory
   CrawlFilesToMap("data_tiny/", docs);
 
   EXPECT_EQ(NumElemsInHashtable(docs), 10);
 
   int ids[11] = {0};
-
   HTIter iter = CreateHashtableIterator(docs);
   HTKeyValue kv;
-
   while (HTIteratorHasMore(iter) != 0) {
     HTIteratorGet(iter, &kv);
     ids[kv.key]++;
     HTIteratorNext(iter);
   }
-  // Get the last
   HTIteratorGet(iter, &kv);
   ids[kv.key]++;
 
-  // Should be a unique id for each file.
-  for (int i=1; i<=10; i++) {
+  for (int i = 1; i <= 10; i++) {
     EXPECT_EQ(ids[i], 1);
   }
 
