@@ -26,7 +26,11 @@ void DestroyString(void *val) {
 }
 
 DocIdMap CreateDocIdMap() {
-  DocIdMap docs = (DocIdMap)CreateHashtable(64);
+  DocIdMap docs = (DocIdMap) CreateHashtable(64);
+  if (docs == NULL) {
+    printf("cannot allocate memory in heap for DocIdMap\n");
+    return NULL;
+  }
   return docs;
 }
 
@@ -40,15 +44,7 @@ int PutFileInMap(char *filename, DocIdMap map) {
   kvp.key = (uint64_t) (NumElemsInHashtable(map) + 1);
   kvp.value = filename;
   int res = PutInHashtable(map, kvp, &old_kvp);
-  while (res == 2) {
-    if (strcmp(filename, (char*)old_kvp.value) != 0) {
-      kvp.key += 1;
-      res = PutInHashtable(map, kvp, &old_kvp);
-    } else {
-      return 0;
-    }
-  }
-  return 0;
+  return res;
 }
 
 DocIdIter CreateDocIdIterator(DocIdMap map) {
