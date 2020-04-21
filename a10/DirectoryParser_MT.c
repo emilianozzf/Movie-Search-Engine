@@ -56,40 +56,39 @@ int ParseTheFiles_MT(DocIdMap docs, MovieTitleIndex index, int num_threads) {
   // Creates the iterator
   DocIdIter iter = CreateDocIdIterator(docs);
   // Stores the index in the global variable movieIndex
-  movieIndex = index;
+  movieIndex = index;  
   // Declares the threads
-  pthread_t[] child = pthread_t[num_threads];
-  int*[] nums_records = int*[num_threads];
+  pthread_t child[num_threads];
+  int* nums_records[num_threads];
   int num_records = 0;
 
   // Spawns the threads to work on the function IndexAFile_MT
-  while (HTIteratorHasMore((HTIter) iter) != 0) {
+  int num_files = NumElemsInHashtable(docs);
+  int num_files_processed = 0;
+  while (num_files_processed < num_files) {
     int i;
     int valid_count = 0;
     for (i = 0; i < num_threads; i++) {
-      if (HTIteratorHasMore((HTIter) iter) != 0) {
+      if (num_files_processed < num_files) {
 	pthread_create(&child[i], NULL, IndexAFile_MT, (void *) iter);
+	num_files_processed += 1;
 	valid_count += 1;
-	HTIteratorNext((HTIter) iter);
       } else {
         break;
       }
     }
- 
+
     for (i = 0; i < valid_count; i++) {
-      pthread_join(child[i], &nums_records[i]);
+      pthread_join(child[i], (void**) &nums_records[i]);
     }
 
     for (i = 0; i < valid_count; i++) {
       num_records += *nums_records[i];
-      free(num_records[i]);
+      free(nums_records[i]);
     }
   }
 
-  pthread_create(&child[0], NULL, IndexAFile_MT, (void *) iter);
-  pthread_join(child[0], &nums_records[0]);
-  num_records += *nums_records[0];
-  free(num_records[0]);
+  DestroyDocIdIterator(iter);
 
   end = clock();
   cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
@@ -108,6 +107,8 @@ void* IndexAFile_MT(void *docname_iter) {
   HTIteratorGet(iter, &dest);
   uint64_t doc_id = dest.key;
   char* file = (char*) dest.value;
+  HTIteratorNext((HTIter) iter);
+  printf("indexing the file named %s\n", file);
   // Unlocks the interator
   pthread_mutex_unlock(&ITER_MUTEX);
 
@@ -123,6 +124,7 @@ void* IndexAFile_MT(void *docname_iter) {
     while (fgets(buffer, kBufferSize, cfPtr) != NULL) {
       // Creates movie from row
       Movie *movie = CreateMovieFromRow(buffer);
+      printf("%s\n", movie->title);
       // Locks the index
       pthread_mutex_lock(&INDEX_MUTEX);
       // Adds movie to index
@@ -132,7 +134,7 @@ void* IndexAFile_MT(void *docname_iter) {
       if (result < 0) {
         fprintf(stderr, "Didn't add MovieToIndex.\n");
       }
-      *num_records++;
+      *num_records = *num_records + 1;
       DestroyMovie(movie);
     }
     fclose(cfPtr);
