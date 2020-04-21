@@ -45,6 +45,7 @@ void* IndexAFile_MT(void *toBeIter);
 pthread_mutex_t ITER_MUTEX = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t INDEX_MUTEX = PTHREAD_MUTEX_INITIALIZER;
 
+// THINK: Why is this global? 
 MovieTitleIndex movieIndex;
 
 int ParseTheFiles_MT(DocIdMap docs, MovieTitleIndex index, int num_threads) {
@@ -52,31 +53,50 @@ int ParseTheFiles_MT(DocIdMap docs, MovieTitleIndex index, int num_threads) {
   double cpu_time_used;
   start = clock();
 
+  // Creates the iterator
   DocIdIter iter = CreateDocIdIterator(docs);
+  // Stores the index in the global variable movieIndex
   movieIndex = index;
-  pthread_t[] tids = pthread_t[num_threads];
-  int*[] num_records = int*[num_threads];
-  int res = 0;
+  // Declares the threads
+  pthread_t[] child = pthread_t[num_threads];
+  int*[] nums_records = int*[num_threads];
+  int num_records = 0;
 
-  
-  for (int i = 0; i < num_threads; i++) {
-    if (HTIteratorHasMore(iter) != 0) {
-      pthread_create(&tids[i], NULL, IndexAFile_MT, iter);
-      pthread_join(tids[i], num_records[i]);
-      HTIteratorNext(iter);
-      res += *num_records[i];
+  // Spawns the threads to work on the function IndexAFile_MT
+  while (HTIteratorHasMore((HTIter) iter) != 0) {
+    int i;
+    int valid_count = 0;
+    for (i = 0; i < num_threads; i++) {
+      if (HTIteratorHasMore((HTIter) iter) != 0) {
+	pthread_create(&child[i], NULL, IndexAFile_MT, (void *) iter);
+	valid_count += 1;
+	HTIteratorNext((HTIter) iter);
+      } else {
+        break;
+      }
+    }
+ 
+    for (i = 0; i < valid_count; i++) {
+      pthread_join(child[i], &nums_records[i]);
+    }
+
+    for (i = 0; i < valid_count; i++) {
+      num_records += *nums_records[i];
       free(num_records[i]);
     }
   }
-  
-  pthread_mutex_destroy(&ITER_MUTEX);
-  pthread_mutex_destroy(&INDEX_MUTEX);
+
+  pthread_create(&child[0], NULL, IndexAFile_MT, (void *) iter);
+  pthread_join(child[0], &nums_records[0]);
+  num_records += *nums_records[0];
+  free(num_records[0]);
 
   end = clock();
   cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 
   printf("Took %f seconds to execute. \n", cpu_time_used);
-  return 0;
+
+  return num_records;
 }
 
 void* IndexAFile_MT(void *docname_iter) {
