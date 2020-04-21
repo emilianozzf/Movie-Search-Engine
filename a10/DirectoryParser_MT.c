@@ -28,7 +28,7 @@
 #include "DocIdMap.h"
 
 
-#define BUFFER_SIZE 1000
+#define kBufferSize 1000
 
 //=======================
 // To minimize the number of files we have, I'm
@@ -80,12 +80,15 @@ int ParseTheFiles_MT(DocIdMap docs, MovieTitleIndex index, int num_threads) {
 }
 
 void* IndexAFile_MT(void *docname_iter) {
+  // Locks the interator
   pthread_mutex_lock(&ITER_MUTEX);
+  // Gets the filename
   HTIter iter = (HTIter) docname_iter;
   HTKeyValue dest;
   HTIteratorGet(iter, &dest);
   uint64_t doc_id = dest.key;
   char* file = (char*) dest.value;
+  // Unlocks the interator
   pthread_mutex_unlock(&ITER_MUTEX);
 
   FILE *cfPtr;
@@ -94,13 +97,17 @@ void* IndexAFile_MT(void *docname_iter) {
     return 0;
   } else {
     char buffer[kBufferSize];
-    int* num_records = (int*) malloc(sizeof(int));
+    int *num_records = (int *) malloc(sizeof(int));
     *num_records = 0;
     
     while (fgets(buffer, kBufferSize, cfPtr) != NULL) {
-      Movie* movie = CreateMovieFromRow(buffer);
+      // Creates movie from row
+      Movie *movie = CreateMovieFromRow(buffer);
+      // Locks the index
       pthread_mutex_lock(&INDEX_MUTEX);
-      int result = AddMovieTitleToIndex(movieIndex, movie, doc_id, row);
+      // Adds movie to index
+      int result = AddMovieTitleToIndex(movieIndex, movie, doc_id, *num_records);
+      // Unlocks the index
       pthread_mutex_unlock(&INDEX_MUTEX);
       if (result < 0) {
         fprintf(stderr, "Didn't add MovieToIndex.\n");
@@ -109,6 +116,6 @@ void* IndexAFile_MT(void *docname_iter) {
       DestroyMovie(movie);
     }
     fclose(cfPtr);
-    return (void*)num_records;
+    return (void *) num_records;
   }
 }
