@@ -107,8 +107,8 @@ void* IndexAFile_MT(void *docname_iter) {
   HTIteratorGet(iter, &dest);
   uint64_t doc_id = dest.key;
   char* file = (char*) dest.value;
+  printf("processing file: %ld\n", doc_id);
   HTIteratorNext((HTIter) iter);
-  printf("indexing the file named %s\n", file);
   // Unlocks the interator
   pthread_mutex_unlock(&ITER_MUTEX);
 
@@ -124,7 +124,6 @@ void* IndexAFile_MT(void *docname_iter) {
     while (fgets(buffer, kBufferSize, cfPtr) != NULL) {
       // Creates movie from row
       Movie *movie = CreateMovieFromRow(buffer);
-      printf("%s\n", movie->title);
       // Locks the index
       pthread_mutex_lock(&INDEX_MUTEX);
       // Adds movie to index

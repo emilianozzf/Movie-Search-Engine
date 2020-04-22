@@ -50,9 +50,18 @@ int main(int argc, char *argv[]) {
   DestroyMovieTitleIndex(doc_index);
 
   // ======================
+  // Index using 1 thread
+  // ======================
+  MovieTitleIndex doc_index_MT = CreateMovieTitleIndex();
+  printf("Parsing and indexing files...\n");
+  ParseTheFiles_MT(docs, doc_index_MT, 1);
+  printf("%d entries in the index.\n", NumElemsInHashtable(doc_index_MT->ht));
+  DestroyMovieTitleIndex(doc_index_MT);
+  
+  // ======================
   // Index using 5 threads
   // ====================== 
-  MovieTitleIndex doc_index_MT = CreateMovieTitleIndex();
+  doc_index_MT = CreateMovieTitleIndex();
   printf("Parsing and indexing files...\n");
   ParseTheFiles_MT(docs, doc_index_MT, 5);
   printf("%d entries in the index.\n", NumElemsInHashtable(doc_index_MT->ht));
