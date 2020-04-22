@@ -1,3 +1,8 @@
+/*
+ *  Name: Emiliano Zhu
+ *  Date: 2020/04/21
+ */
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,7 +34,7 @@ int main(int argc, char *argv[]) {
   }
 
   DocIdMap docs;
-  
+
   // Create a DocIdMap
   docs = CreateDocIdMap();
   CrawlFilesToMap(argv[1], docs);
@@ -57,10 +62,10 @@ int main(int argc, char *argv[]) {
   ParseTheFiles_MT(docs, doc_index_MT, 1);
   printf("%d entries in the index.\n", NumElemsInHashtable(doc_index_MT->ht));
   DestroyMovieTitleIndex(doc_index_MT);
-  
+
   // ======================
   // Index using 5 threads
-  // ====================== 
+  // ======================
   doc_index_MT = CreateMovieTitleIndex();
   printf("Parsing and indexing files...\n");
   ParseTheFiles_MT(docs, doc_index_MT, 5);
@@ -69,7 +74,7 @@ int main(int argc, char *argv[]) {
 
   // ======================
   // Index using 10 threads
-  // ======================   
+  // ======================
   doc_index_MT = CreateMovieTitleIndex();
   printf("Parsing and indexing files...\n");
   ParseTheFiles_MT(docs, doc_index_MT, 10);

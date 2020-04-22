@@ -1,4 +1,8 @@
 /*
+ *  Name: Emiliano Zhu
+Using sizeof(type).  Use sizeof(varname) instead if possible  [runtime/sizeof] [1]
+DirectoryParser_MT.c:133:  Lines should be <= 80 characters long  [whitespace/line_length] [2] *  Time: 04/21
+ *
  *  Created by Adrienne Slaughter
  *  CS 5007 Summer 2019
  *  Northeastern University, Seattle
@@ -36,7 +40,7 @@
 // the DirectoryParser here.
 
 /**
- * Helper function to index a single file. 
+ * Helper function to index a single file.
  *
  * \return a pointer to the number of records (lines) indexed from the file
  */
@@ -45,7 +49,7 @@ void* IndexAFile_MT(void *toBeIter);
 pthread_mutex_t ITER_MUTEX = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t INDEX_MUTEX = PTHREAD_MUTEX_INITIALIZER;
 
-// THINK: Why is this global? 
+// THINK: Why is this global?
 MovieTitleIndex movieIndex;
 
 int ParseTheFiles_MT(DocIdMap docs, MovieTitleIndex index, int num_threads) {
@@ -56,7 +60,7 @@ int ParseTheFiles_MT(DocIdMap docs, MovieTitleIndex index, int num_threads) {
   // Creates the iterator
   DocIdIter iter = CreateDocIdIterator(docs);
   // Stores the index in the global variable movieIndex
-  movieIndex = index;  
+  movieIndex = index;
   // Declares the threads
   pthread_t child[num_threads];
   int* nums_records[num_threads];
@@ -70,9 +74,9 @@ int ParseTheFiles_MT(DocIdMap docs, MovieTitleIndex index, int num_threads) {
     int valid_count = 0;
     for (i = 0; i < num_threads; i++) {
       if (num_files_processed < num_files) {
-	pthread_create(&child[i], NULL, IndexAFile_MT, (void *) iter);
-	num_files_processed += 1;
-	valid_count += 1;
+        pthread_create(&child[i], NULL, IndexAFile_MT, (void *) iter);
+        num_files_processed += 1;
+        valid_count += 1;
       } else {
         break;
       }
@@ -120,14 +124,15 @@ void* IndexAFile_MT(void *docname_iter) {
     char buffer[kBufferSize];
     int *num_records = (int *) malloc(sizeof(int));
     *num_records = 0;
-    
+
     while (fgets(buffer, kBufferSize, cfPtr) != NULL) {
       // Creates movie from row
       Movie *movie = CreateMovieFromRow(buffer);
       // Locks the index
       pthread_mutex_lock(&INDEX_MUTEX);
       // Adds movie to index
-      int result = AddMovieTitleToIndex(movieIndex, movie, doc_id, *num_records);
+      int result = AddMovieTitleToIndex(movieIndex, movie,
+                                        doc_id, *num_records);
       // Unlocks the index
       pthread_mutex_unlock(&INDEX_MUTEX);
       if (result < 0) {
