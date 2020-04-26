@@ -17,12 +17,57 @@ char *ip = "127.0.0.1";
 
 void RunQuery(char *query) {
   // Find the address
+  struct addrinfo hints, *infoptr;
+  hints.ai_family = AF_INET; // AF_INET meas IPv4 only address
+  hints.ai_socktype = SOCK_STREAM; // TCP
 
+  int result = getaddrinfo(ip, port, &hints, &infoptr);
+  if (result != 0) {
+    printf("Could not get the address.\n");
+    return;
+  }
+  
   // Create the socket
+  int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+  if (socket_fd == -1) {
+    printf("Could not create the socket.\n");
+    return;
+  }
 
   // Connect to the server
+  if (connect(socket_fd, infoptr->ai_addr, result->ai_addrlen) == -1) {
+    printf("Could not connect!\n");
+    return;
+  }
 
   // Do the query-protocol
+  char resp[1000];
+  int len = read(socket_fd, resp, 999);
+  resp[len] = '\0';
+  if (CheckAck(resp) == -1) {
+    printf("Did not receive ACK.\n");
+    return;
+  }
+
+  write(socket_fd, input, strlen(input));
+  int len = read(socket_fd, resp, 999);
+  resp[len] = '\0';
+  int num_of_responses = atoi(resp);
+  SendAck(socket_fd);
+  for (int i = 0; i < num_of_responses; i ++) {
+    int len = read(socket_fd, resp, 999);
+    resp[len] = '\0';
+    printf("%s\n", resp);
+    SendAck(socket_fd);
+  }
+
+  int len = read(socket_fd, resp, 999);
+  resp[len] = '\0';
+  if (CheckGoodbye(resp) == 0) {
+    freeaddrinfo(infoptr);
+    close(socket_fd);
+    return;
+  }
 
   // Close the connection
 }
