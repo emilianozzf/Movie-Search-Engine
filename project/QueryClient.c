@@ -18,10 +18,11 @@ char *ip = "127.0.0.1";
 void RunQuery(char *query) {
   // Find the address
   struct addrinfo hints, *infoptr;
+  memset(&hints, 0, sizeof(struct addrinfo));
   hints.ai_family = AF_INET; // AF_INET meas IPv4 only address
   hints.ai_socktype = SOCK_STREAM; // TCP
 
-  int result = getaddrinfo(ip, port, &hints, &infoptr);
+  int result = getaddrinfo(ip, port_string, &hints, &infoptr);
   if (result != 0) {
     printf("Could not get the address.\n");
     return;
@@ -35,7 +36,7 @@ void RunQuery(char *query) {
   }
 
   // Connect to the server
-  if (connect(socket_fd, infoptr->ai_addr, result->ai_addrlen) == -1) {
+  if (connect(socket_fd, infoptr->ai_addr, infoptr->ai_addrlen) == -1) {
     printf("Could not connect!\n");
     return;
   }
@@ -48,28 +49,33 @@ void RunQuery(char *query) {
     printf("Did not receive ACK.\n");
     return;
   }
+  printf("I just received %s\n", resp);
 
-  write(socket_fd, input, strlen(input));
-  int len = read(socket_fd, resp, 999);
+  write(socket_fd, query, strlen(query));
+  printf("I just sent %s\n", query);
+
+  len = read(socket_fd, resp, 999);
   resp[len] = '\0';
+  printf("I just received %s\n", resp);
   int num_of_responses = atoi(resp);
+
   SendAck(socket_fd);
-  for (int i = 0; i < num_of_responses; i ++) {
-    int len = read(socket_fd, resp, 999);
+
+  for (int i = 0; i < num_of_responses; i++) {
+    len = read(socket_fd, resp, 999);
     resp[len] = '\0';
     printf("%s\n", resp);
     SendAck(socket_fd);
   }
 
-  int len = read(socket_fd, resp, 999);
+  // Closes the connection
+  len = read(socket_fd, resp, 999);
   resp[len] = '\0';
   if (CheckGoodbye(resp) == 0) {
     freeaddrinfo(infoptr);
     close(socket_fd);
     return;
   }
-
-  // Close the connection
 }
 
 void RunPrompt() {
@@ -96,14 +102,19 @@ void RunPrompt() {
 // that it is up and running, before accepting queries from users.
 // Returns 0 if can't connect; 1 if can. 
 int CheckIpAddress(char *ip, char *port) {
-  // Connect to the server
+  if (strcmp(ip, "127.0.0.1") != 0 && strcmp(ip, "localhost") != 0) {
+    printf("The ip address was not correct.\n");
+    return 0;
+  }
 
+  // Connect to the server
   // Resolves DNS names
   struct addrinfo hints, *infoptr;
+  memset(&hints, 0, sizeof(struct addrinfo));
   hints.ai_family = AF_INET; // AF_INET meas IPv4 only address
   hints.ai_socktype = SOCK_STREAM; // TCP
 
-  int result = getaddrinfo(ip, port, &hints, &infoptr);
+  int result = getaddrinfo(ip, port_string, &hints, &infoptr);
   if (result != 0) {
     printf("Could not get the address.\n");
     return 0;
@@ -116,7 +127,7 @@ int CheckIpAddress(char *ip, char *port) {
     return 0;
   }
 
-  if (connect(socket_fd, infoptr->ai_addr, result->ai_addrlen) == -1) {
+  if (connect(socket_fd, infoptr->ai_addr, infoptr->ai_addrlen) == -1) {
     printf("Could not connect!\n");
     return 0;
   }
