@@ -29,6 +29,18 @@ MovieTitleIndex docIndex;
 #define SEARCH_RESULT_LENGTH 1500
 char movieSearchResult[SEARCH_RESULT_LENGTH];
 
+void send_message(char *msg, int sock_fd) {
+  printf("SENDING: %s\n", msg);
+  write(sock_fd, msg, strlen(msg));
+ }
+
+void receive_message(char *resp, int sock_fd) {
+  int len = read(sock_fd, resp, 999);
+  resp[len] = '\0';
+
+  printf("RECEIVED: %s\n", resp);
+}
+
 int Cleanup();
 
 void sigint_handler(int sig) {
@@ -38,31 +50,44 @@ void sigint_handler(int sig) {
 }
 
 int HandleClient(int sock_fd) {
-  // Step 5: Accept connection
   
   // Step 6: Read, then write if you want
 
   // Send ACK
+  SendAck(sock_fd);
 
   // Listen for query
+  char resp[1000];
+  receive_message(resp, sock_fd);
   // If query is GOODBYE close ocnnection
+  if (CheckGoodbye(resp) == 0) {
+    close(sock_fd);
+    return 0;
+  }
 
   // Run query and get responses
+  printf("Run query and get responses!\n");
   
   // Send number of responses
+  send_message("number of responses", sock_fd);
   
   // Wait for ACK
+  receive_message(resp, sock_fd);
 
   // For each response
   
     // Send response
+  send_message("response!", sock_fd);
     // Wait for ACK
+  receive_message(resp, sock_fd);
  
   // Cleanup
 
   // Send GOODBYE
+  SendGoodbye(sock_fd);
 
   // close connection.
+  close(sock_fd);
   return 0;
 }
 
@@ -147,15 +172,46 @@ int main(int argc, char **argv) {
 
   int s;
   // Step 1: Get address stuff
+  struct addrinfo hints, *result;
+
+  memset(&hints, 0, sizeof(struct addrinfo));
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags = AI_PASSIVE;
+  s = getaddrinfo(NULL, port, &hints, &result);
+  if (s != 0) {
+    printf("Could not get the address.\n");
+    exit(1);
+  }
 
   // Step 2: Open socket
+  int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
   
   // Step 3: Bind socket
+  if (bind(sock_fd, result->ai_addr, result->ai_addrlen) != 0) {
+    perror("bind()");
+    exit(1);
+  }
   
   // Step 4: Listen on the socket
-  
+  if (listen(sock_fd, 10) != 0) {
+    perror("listen()");
+    exit(1);
+  }
+
+  struct sockaddr_in *result_addr = (struct sockaddr_in *) result->ai_addr;
+  printf("Listening on file descriptor %d, port %d\n", sock_fd, ntohs(result_addr->sin_port));
+
+  while (1) {
+    // Step 5: Accepts a connection
+    printf("Waiting for connection...\n");
+    int client_fd = accept(sock_fd, NULL, NULL);
+    printf("Conncetion made: client_fd=%d\n", client_fd);
+    
+    HandleClient(client_fd);
+  }
   // Got Kill signal
-  close(sock_fd);
+  // close(sock_fd);
 
   Cleanup();
 

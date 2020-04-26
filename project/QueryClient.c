@@ -15,67 +15,83 @@ char *ip = "127.0.0.1";
 
 #define BUFFER_SIZE 1000
 
-void RunQuery(char *query) {
-  // Find the address
-  struct addrinfo hints, *infoptr;
+int do_connect() {
+  int s;
+  int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+
+  struct addrinfo hints, *result;
+
   memset(&hints, 0, sizeof(struct addrinfo));
-  hints.ai_family = AF_INET; // AF_INET meas IPv4 only address
-  hints.ai_socktype = SOCK_STREAM; // TCP
-
-  int result = getaddrinfo(ip, port_string, &hints, &infoptr);
-  if (result != 0) {
-    printf("Could not get the address.\n");
-    return;
-  }
-  
-  // Create the socket
-  int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-  if (socket_fd == -1) {
-    printf("Could not create the socket.\n");
-    return;
+  hints.ai_family = AF_INET; /* IPv4 only */
+  hints.ai_socktype = SOCK_STREAM; /* TCP */
+  s = getaddrinfo(ip, port_string, &hints, &result);
+  if (s != 0) {
+    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+    exit(1);
   }
 
-  // Connect to the server
-  if (connect(socket_fd, infoptr->ai_addr, infoptr->ai_addrlen) == -1) {
-    printf("Could not connect!\n");
-    return;
+  if (connect(sock_fd, result->ai_addr, result->ai_addrlen) == -1) {
+    perror("connect");
+    exit(2);
+  } else {
+    printf("Connection is good!\n");
   }
 
-  // Do the query-protocol
-  char resp[1000];
-  int len = read(socket_fd, resp, 999);
+  return sock_fd;
+}
+
+void send_message(char *msg, int sock_fd) {
+  printf("SENDING: %s\n", msg);
+  write(sock_fd, msg, strlen(msg));
+}
+
+void read_response(char *resp, int sock_fd) {
+  int len = read(sock_fd, resp, BUFFER_SIZE-1);
   resp[len] = '\0';
+
+  printf("RECEIVED: %s\n", resp);
+}
+
+void RunQuery(char *query) {
+  // Connects to the remote server
+  int sock_fd = do_connect();
+
+  // Does the query-protocol
+  // Gets ACK
+  char resp[BUFFER_SIZE];
+  read_response(resp, sock_fd);
   if (CheckAck(resp) == -1) {
     printf("Did not receive ACK.\n");
     return;
   }
-  printf("I just received %s\n", resp);
 
-  write(socket_fd, query, strlen(query));
-  printf("I just sent %s\n", query);
+  // Sends query
+  send_message(query, sock_fd);
 
-  len = read(socket_fd, resp, 999);
-  resp[len] = '\0';
-  printf("I just received %s\n", resp);
-  int num_of_responses = atoi(resp);
+  // Gets number of responses
+  read_response(resp, sock_fd);
+  int num_responses = atoi(resp);
 
-  SendAck(socket_fd);
+  // Sends ACK
+  SendAck(sock_fd);
 
-  for (int i = 0; i < num_of_responses; i++) {
-    len = read(socket_fd, resp, 999);
-    resp[len] = '\0';
-    printf("%s\n", resp);
-    SendAck(socket_fd);
+  // For each response 
+  for (int i = 0; i < num_responses; i++) {
+    // Gets response
+    read_response(resp, sock_fd);
+    // Sends ACK
+    SendAck(sock_fd);
+  }
+
+  // Gets GOODBYE
+  read_response(resp, sock_fd);
+  if (CheckGoodbye(resp) == -1) {
+    printf("Did not receive GOODBYE.\n");
+    return;
   }
 
   // Closes the connection
-  len = read(socket_fd, resp, 999);
-  resp[len] = '\0';
-  if (CheckGoodbye(resp) == 0) {
-    freeaddrinfo(infoptr);
-    close(socket_fd);
-    return;
-  }
+  close(sock_fd); 
 }
 
 void RunPrompt() {
@@ -102,54 +118,32 @@ void RunPrompt() {
 // that it is up and running, before accepting queries from users.
 // Returns 0 if can't connect; 1 if can. 
 int CheckIpAddress(char *ip, char *port) {
+  // Checks if the input ip is correct 
   if (strcmp(ip, "127.0.0.1") != 0 && strcmp(ip, "localhost") != 0) {
     printf("The ip address was not correct.\n");
     return 0;
   }
 
-  // Connect to the server
-  // Resolves DNS names
-  struct addrinfo hints, *infoptr;
-  memset(&hints, 0, sizeof(struct addrinfo));
-  hints.ai_family = AF_INET; // AF_INET meas IPv4 only address
-  hints.ai_socktype = SOCK_STREAM; // TCP
+  // Connects to the remote server
+  int sock_fd = do_connect();
 
-  int result = getaddrinfo(ip, port_string, &hints, &infoptr);
-  if (result != 0) {
-    printf("Could not get the address.\n");
-    return 0;
-  }
-
-  // Creates a socket
-  int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
-  if (socket_fd == -1) {
-    printf("Could not create the socket.\n");
-    return 0;
-  }
-
-  if (connect(socket_fd, infoptr->ai_addr, infoptr->ai_addrlen) == -1) {
-    printf("Could not connect!\n");
-    return 0;
-  }
-
-  // Listen for an ACK
+  // Gets ACK
   char resp[1000];
-  int len = read(socket_fd, resp, 999);
-  resp[len] = '\0';
+  read_response(resp, sock_fd);
   if (CheckAck(resp) == -1) {
     printf("Did not receive ACK.\n");
+    close(sock_fd);
     return 0;
   }
 
-  // Sends a GOODBYE
-  if (SendGoodbye(socket_fd) == -1) {
-    printf("Did not send GOODBYE!\n");
+  // Sends GOODBYE
+  if (SendGoodbye(sock_fd) == -1) {
+    printf("Could not sent GOODBYE.\n");
+    close(sock_fd);
     return 0;
-  }  
+  }
 
-  // Closes the connection
-  freeaddrinfo(infoptr);
-  close(socket_fd);
+  close(sock_fd);
   return 1;
 }
 
