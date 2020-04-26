@@ -52,15 +52,56 @@ void RunPrompt() {
 // Returns 0 if can't connect; 1 if can. 
 int CheckIpAddress(char *ip, char *port) {
   // Connect to the server
+
+  // Resolves DNS names
+  struct addrinfo hints, *infoptr;
+  hints.ai_family = AF_INET; // AF_INET meas IPv4 only address
+  hints.ai_socktype = SOCK_STREAM; // TCP
+
+  int result = getaddrinfo(ip, port, &hints, &infoptr);
+  if (result != 0) {
+    printf("Could not get the address.\n");
+    return 0;
+  }
+
+  // Creates a socket
+  int socket_fd = socket(AF_INET, SOCK_STREAM, 0);
+  if (socket_fd == -1) {
+    printf("Could not create the socket.\n");
+    return 0;
+  }
+
+  if (connect(socket_fd, infoptr->ai_addr, result->ai_addrlen) == -1) {
+    printf("Could not connect!\n");
+    return 0;
+  }
+
   // Listen for an ACK
-  // Send a goodbye
-  // Close the connection
+  char resp[1000];
+  int len = read(socket_fd, resp, 999);
+  resp[len] = '\0';
+  if (CheckAck(resp) == -1) {
+    printf("Did not receive ACK.\n");
+    return 0;
+  }
+
+  // Sends a GOODBYE
+  if (SendGoodbye(socket_fd) == -1) {
+    printf("Did not send GOODBYE!\n");
+    return 0;
+  }  
+
+  // Closes the connection
+  freeaddrinfo(infoptr);
+  close(socket_fd);
+  return 1;
 }
 
 int main(int argc, char **argv) {
   if (argc != 3) {
     printf("Incorrect number of arguments. \n");
     printf("Correct usage: ./queryclient [IP] [port]\n");
+    return 1;
   } else {
     ip = argv[1];
     port_string = argv[2];
