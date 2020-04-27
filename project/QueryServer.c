@@ -1,13 +1,14 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <signal.h>
-
 #include "DirectoryParser_MT.h"
 #include "QueryProtocol.h"
 #include "MovieSet.h"
@@ -23,40 +24,66 @@
 
 DocIdMap docs;
 MovieTitleIndex docIndex;
+struct addrinfo *result;
 
 #define BUFFER_SIZE 1000
 
 #define SEARCH_RESULT_LENGTH 1500
 char movieSearchResult[SEARCH_RESULT_LENGTH];
 
+char* Int2String(int num,char *str) {
+    int i = 0;
+    if (num < 0) {
+       num = -num;
+       str[i++] = '-';
+    } 
+ 
+    do {
+      str[i++] = num % 10 + 48; 
+      num /= 10;    
+    } while (num);
+
+    str[i] = '\0';
+
+    int j = 0;
+    if (str[0]=='-') {
+        j = 1; 
+        ++i; 
+    }
+ 
+    for(; j < i/2; j++) { 
+        str[j] = str[j] + str[i-1-j];
+        str[i-1-j] = str[j] - str[i-1-j];
+        str[j] = str[j] - str[i-1-j];
+    } 
+    
+    return str;
+}
+
 void send_message(char *msg, int sock_fd) {
-  printf("SENDING: %s\n", msg);
   write(sock_fd, msg, strlen(msg));
  }
 
 void receive_message(char *resp, int sock_fd) {
-  int len = read(sock_fd, resp, 999);
+  int len = read(sock_fd, resp, BUFFER_SIZE - 1);
   resp[len] = '\0';
-
-  printf("RECEIVED: %s\n", resp);
 }
 
 int Cleanup();
 
 void sigint_handler(int sig) {
   write(0, "Exit signal sent. Cleaning up...\n", 34);
-    Cleanup();
+  Cleanup();
   exit(0);
 }
 
-int HandleClient(int sock_fd) {
-  
-  // Step 6: Read, then write if you want
+int HandleClient(int sock_fd) { 
+  // Reads, then writes if you want
 
-  // Send ACK
+  // Sends ACK
   SendAck(sock_fd);
 
-  // Listen for query
+  // Listens for query
   char resp[1000];
   receive_message(resp, sock_fd);
   // If query is GOODBYE close ocnnection
@@ -65,29 +92,61 @@ int HandleClient(int sock_fd) {
     return 0;
   }
 
-  // Run query and get responses
-  printf("Run query and get responses!\n");
-  
+  // Runs query and gets responses
+  SearchResultIter results = FindMovies(docIndex, resp);
+  if (results == NULL) {
+      printf("No results for this term. Please try another.\n");
+      return 0;
+  }
+
   // Send number of responses
-  send_message("number of responses", sock_fd);
-  
+  int num_responses = NumResultsInIter(results);
+  printf("num_responses: %d\n", num_responses);
+  write(sock_fd, &num_responses, sizeof(int));
+
   // Wait for ACK
   receive_message(resp, sock_fd);
-
-  // For each response
+  CheckAck(resp);
   
-    // Send response
-  send_message("response!", sock_fd);
-    // Wait for ACK
+  SearchResult sr = (SearchResult)malloc(sizeof(*sr));
+    if (sr == NULL) {
+      printf("Couldn't malloc SearchResult in main.c\n");
+      return 0;
+   }
+  int result;
+  SearchResultGet(results, sr);
+  CopyRowFromFile(sr, docs, movieSearchResult);
+  // Sends response
+  send_message(movieSearchResult, sock_fd);
+  // Waits for ACK 
   receive_message(resp, sock_fd);
- 
-  // Cleanup
+  CheckAck(resp);
 
+   while (SearchResultIterHasMore(results) != 0) {
+     result = SearchResultNext(results);
+     if (result < 0) {
+       printf("error retrieving result\n");
+       break;
+     }
+     SearchResultGet(results, sr);
+     CopyRowFromFile(sr, docs, movieSearchResult);
+     // Sends response
+     send_message(movieSearchResult, sock_fd);
+     // Waits for ACK
+     receive_message(resp, sock_fd);
+     CheckAck(resp);
+   }
+   
+   free(sr);
+   DestroySearchResultIter(results);
+   printf("Destroying search result iter\n");
+ 
   // Send GOODBYE
   SendGoodbye(sock_fd);
 
   // close connection.
   close(sock_fd);
+  printf("Client connection closes.\n");
   return 0;
 }
 
@@ -116,6 +175,7 @@ int Setup(char *dir) {
 int Cleanup() {
   DestroyMovieTitleIndex(docIndex);
   DestroyDocIdMap(docs);
+  freeaddrinfo(result);
 
   return 0;
 }
@@ -171,29 +231,30 @@ int main(int argc, char **argv) {
   }
 
   int s;
-  // Step 1: Get address stuff
-  struct addrinfo hints, *result;
+  // Gets address stuff
+  struct addrinfo hints;
 
+  // Sets up the hints struct
   memset(&hints, 0, sizeof(struct addrinfo));
   hints.ai_family = AF_INET;
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = AI_PASSIVE;
   s = getaddrinfo(NULL, port, &hints, &result);
   if (s != 0) {
-    printf("Could not get the address.\n");
+    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
     exit(1);
   }
 
-  // Step 2: Open socket
+  // Opens the socket
   int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
   
-  // Step 3: Bind socket
+  // Binds the socket
   if (bind(sock_fd, result->ai_addr, result->ai_addrlen) != 0) {
     perror("bind()");
     exit(1);
   }
-  
-  // Step 4: Listen on the socket
+
+  // Listens on the socket
   if (listen(sock_fd, 10) != 0) {
     perror("listen()");
     exit(1);
@@ -203,16 +264,17 @@ int main(int argc, char **argv) {
   printf("Listening on file descriptor %d, port %d\n", sock_fd, ntohs(result_addr->sin_port));
 
   while (1) {
-    // Step 5: Accepts a connection
+    // Accepts a connection
     printf("Waiting for connection...\n");
     int client_fd = accept(sock_fd, NULL, NULL);
-    printf("Conncetion made: client_fd=%d\n", client_fd);
-    
+    printf("Client connected\n");
+ 
     HandleClient(client_fd);
   }
-  // Got Kill signal
-  // close(sock_fd);
 
+  // Got Kill signal
+  close(sock_fd);
+  freeaddrinfo(result);
   Cleanup();
 
   return 0;

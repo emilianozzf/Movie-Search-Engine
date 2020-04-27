@@ -12,6 +12,7 @@
 char *port_string = "1500";
 unsigned short int port;
 char *ip = "127.0.0.1";
+struct addrinfo *result;
 
 #define BUFFER_SIZE 1000
 
@@ -19,7 +20,7 @@ int do_connect() {
   int s;
   int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
 
-  struct addrinfo hints, *result;
+  struct addrinfo hints;
 
   memset(&hints, 0, sizeof(struct addrinfo));
   hints.ai_family = AF_INET; /* IPv4 only */
@@ -34,25 +35,27 @@ int do_connect() {
     perror("connect");
     exit(2);
   } else {
-    printf("Connection is good!\n");
+    printf("Connected to movie server!\n");
   }
 
   return sock_fd;
 }
 
 void send_message(char *msg, int sock_fd) {
-  printf("SENDING: %s\n", msg);
   write(sock_fd, msg, strlen(msg));
 }
 
 void read_response(char *resp, int sock_fd) {
   int len = read(sock_fd, resp, BUFFER_SIZE-1);
   resp[len] = '\0';
-
-  printf("RECEIVED: %s\n", resp);
 }
 
 void RunQuery(char *query) {
+  if (strlen(query) > 100) {
+    printf("Query is limited to 100 characters.\n");
+    return;
+  }
+  
   // Connects to the remote server
   int sock_fd = do_connect();
 
@@ -69,8 +72,8 @@ void RunQuery(char *query) {
   send_message(query, sock_fd);
 
   // Gets number of responses
-  read_response(resp, sock_fd);
-  int num_responses = atoi(resp);
+  int num_responses;
+  read(sock_fd, &num_responses, sizeof(int));
 
   // Sends ACK
   SendAck(sock_fd);
@@ -79,6 +82,7 @@ void RunQuery(char *query) {
   for (int i = 0; i < num_responses; i++) {
     // Gets response
     read_response(resp, sock_fd);
+    printf("%s\n", resp);
     // Sends ACK
     SendAck(sock_fd);
   }
@@ -87,10 +91,12 @@ void RunQuery(char *query) {
   read_response(resp, sock_fd);
   if (CheckGoodbye(resp) == -1) {
     printf("Did not receive GOODBYE.\n");
+    close(sock_fd);
     return;
   }
 
   // Closes the connection
+  freeaddrinfo(result);
   close(sock_fd); 
 }
 
@@ -142,7 +148,7 @@ int CheckIpAddress(char *ip, char *port) {
     close(sock_fd);
     return 0;
   }
-
+  freeaddrinfo(result);
   close(sock_fd);
   return 1;
 }
