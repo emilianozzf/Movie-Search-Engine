@@ -31,35 +31,6 @@ struct addrinfo *result;
 #define SEARCH_RESULT_LENGTH 1500
 char movieSearchResult[SEARCH_RESULT_LENGTH];
 
-char* Int2String(int num,char *str) {
-    int i = 0;
-    if (num < 0) {
-       num = -num;
-       str[i++] = '-';
-    } 
- 
-    do {
-      str[i++] = num % 10 + 48; 
-      num /= 10;    
-    } while (num);
-
-    str[i] = '\0';
-
-    int j = 0;
-    if (str[0]=='-') {
-        j = 1; 
-        ++i; 
-    }
- 
-    for(; j < i/2; j++) { 
-        str[j] = str[j] + str[i-1-j];
-        str[i-1-j] = str[j] - str[i-1-j];
-        str[j] = str[j] - str[i-1-j];
-    } 
-    
-    return str;
-}
-
 void send_message(char *msg, int sock_fd) {
   write(sock_fd, msg, strlen(msg));
  }
@@ -245,6 +216,7 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
+  
   // Opens the socket
   int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
   

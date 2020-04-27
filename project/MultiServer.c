@@ -28,6 +28,7 @@ int Cleanup();
 
 DocIdMap docs;
 MovieTitleIndex docIndex;
+struct addrinfo *result;
 
 #define SEARCH_RESULT_LENGTH 1500
 
@@ -50,37 +51,97 @@ void sigint_handler(int sig) {
   exit(0);
 }
 
+void send_message(char *msg, int sock_fd) {
+  write(sock_fd, msg, strlen(msg));
+}
+
+void receive_message(char *resp, int sock_fd) {
+   int len = read(sock_fd, resp, BUFFER_SIZE - 1);
+  resp[len] = '\0';
+}
+
 /**
  * Return 0 for successful connection;
  * Return -1 for some error.
  */
 int HandleClient(int client_fd, char* query) {
-  
+  // Runs query and gets responses
+  SearchResultIter results = FindMovies(docIndex, query);
+  if (results == NULL) {
+      printf("No results for this term. Please try another.\n");
+      return 0;
+  }
 
-  // Run query and get responses
-  
-  // Send number of responses
-  
+  // Send number of responses          
+  int num_responses = NumResultsInIter(results);
+  printf("num_responses: %d\n", num_responses);
+  write(client_fd, &num_responses, sizeof(int));
+
+  char resp[1000];
   // Wait for ACK
-  
-  // For each response
-  
-    // Send response
-    
-    // Wait for ACK
-    
-  
+  receive_message(resp, client_fd);
+  CheckAck(resp);
+
+  SearchResult sr = (SearchResult)malloc(sizeof(*sr));
+    if (sr == NULL) {
+      printf("Couldn't malloc SearchResult in main.c\n");
+      return 0;
+   }
+  int result;
+  SearchResultGet(results, sr);
+  CopyRowFromFile(sr, docs, movieSearchResult);
+  // Sends response
+  send_message(movieSearchResult, client_fd);
+  // Waits for ACK
+  receive_message(resp, client_fd);
+  CheckAck(resp);
+
+   while (SearchResultIterHasMore(results) != 0) {
+     result = SearchResultNext(results);
+     if (result < 0) {
+       printf("error retrieving result\n");
+       break;
+     }
+     SearchResultGet(results, sr);
+     CopyRowFromFile(sr, docs, movieSearchResult);
+     // Sends response
+     send_message(movieSearchResult, client_fd);
+     // Waits for ACK
+     receive_message(resp, client_fd);
+     CheckAck(resp);
+   }
+
+   free(sr);
+   DestroySearchResultIter(results);
+   printf("Destroying search result iter\n");
+
   // Send GOODBYE
-  
+   SendGoodbye(client_fd);
   // close connection.
-  
+   close(client_fd);
+  printf("Client connection closes.\n");
+  return 0;
 }
 
-/**
- *
- */
 int HandleConnections(int sock_fd, int debug) {
-  // Step 5: Accept connection
+  // Accept connection
+  int client_fd;
+  while (1) {
+    // Accepts a connection                                                                         
+    printf("Waiting for connection...\n");
+    client_fd = accept(sock_fd, NULL, NULL);
+    printf("Client connected\n");  
+  
+    SendAck(client_fd);
+    char resp[1000];
+    receive_message(resp, client_fd);
+    if (CheckGoodbye(resp) == 0) {
+      close(client_fd);
+    } else {
+      HandleClient(client_fd, resp);
+    }
+  }
+  
   // Fork on every connection
 
   return 0;
@@ -132,6 +193,7 @@ int Setup(char *dir) {
 int Cleanup() {
   DestroyMovieTitleIndex(docIndex);
   DestroyDocIdMap(docs);
+  freeaddrinfo(result);
   return 0;
 }
 
@@ -176,17 +238,37 @@ int main(int argc, char **argv) {
 
   int s;
 
-  // Step 1: Get address stuff
-  
+  // Get address stuff
+  struct addrinfo hints;
+  memset(&hints, 0, sizeof(struct addrinfo));
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags = AI_PASSIVE;
+  s = getaddrinfo(NULL, port, &hints, &result);
+  if (s != 0) {
+    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+    exit(1);
+  }
 
-  // Step 2: Open socket
+  // Open socket
+  int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
   
+  // Bind socket
+  if (bind(sock_fd, result->ai_addr, result->ai_addrlen) != 0) {
+    perror("bind()");
+    exit(1);
+  }
+ 
+  // Listen on the socket
+  if (listen(sock_fd, 10) != 0) {
+    perror("listen()");
+    exit(1);
+  }
 
-  // Step 3: Bind socket
-  
+  struct sockaddr_in *result_addr = (struct sockaddr_in *) result->ai_addr;
+  printf("Listening on file descriptor %d, port %d\n", sock_fd, ntohs(result_addr->sin_port));
 
-  // Step 4: Listen on the socket
-  
+  HandleConnections(sock_fd, debug_flag);
 
   // Got Kill signal
   close(sock_fd);

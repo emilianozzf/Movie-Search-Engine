@@ -16,7 +16,7 @@ runserver:
 	valgrind ./queryserver -f data_small/ -p 1500
 
 runmultiserver:
-	./multiserver -f data_small/ -p 1500
+	valgrind ./multiserver -f data_small/ -p 1500
 
 client: QueryClient.c $(OBJS)
 	gcc -o queryclient QueryClient.c $(OBJS) $(CFLAGS)
@@ -28,7 +28,7 @@ rungoldserver:
 	valgrind binaries/queryserver -f data_small/ -p 1500
 
 rungoldmultiserver: 
-	binaries/multiserver data_small/ 1500
+	valgrind binaries/multiserver data_small/ 1500
 
 rungoldclient: 
 	valgrind binaries/queryclient 127.0.0.1 1500
