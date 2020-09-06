@@ -25,9 +25,9 @@ This module requires no modules outside of C.
 CONFIGURATION & USAGE
 -------------
 
-# Assignment 7: Linked List with Iterator, Google Testing
+## Assignment 7: Linked List with Iterator, Google Testing
 
-## Files
+### Files
 
 * ```Makefile```: a makefile you can use to compile the assignment using the Linux command make all.
 * ```LinkedList.h```: a header file that defines and documents the API to the linked list. A customer of the linked list includes this header file and uses the functions defined within in. Read through this header file very carefully to understand how the linked list is expected to behave.
