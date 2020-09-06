@@ -25,9 +25,7 @@ This module requires no modules outside of C.
 CONFIGURATION & USAGE
 -------------
 
-## Assignment 7: Linked List with Iterator, Google Testing
-
-### Files
+### Assignment 7: Linked List with Iterator, Google Testing
 
 * ```Makefile```: a makefile you can use to compile the assignment using the Linux command make all.
 * ```LinkedList.h```: a header file that defines and documents the API to the linked list. A customer of the linked list includes this header file and uses the functions defined within in. Read through this header file very carefully to understand how the linked list is expected to behave.
@@ -36,9 +34,9 @@ CONFIGURATION & USAGE
 * ```test_linkedlist.cc```: this file contains unit tests that we wrote to verify that the linked list implementation works correctly. The unit tests are written to use the Google Test (Links to an external site.) unit testing framework, which has similarities to Java's JUnit testing framework. Further, this test harness will assist TAs in grading your assignment: as you add more pieces to the implementation, the test harness will make it further through the unit tests, and it will print out a cumulative score along the way. You don't need to understand what's in the test driver for this assignment, though if you peek inside it, you might get hints for what kinds of things you should be doing in your implementation!
 * ```solution_binaries```: in this directory, you'll find some Linux executables, including ```example_program_ll``` and ```test_suite```. These binaries were compiled with a complete, working version of ```LinkedList.c```; you can run them to explore what should be displayed when your assignment is working!
 
-# A8: Building a Data Indexer
 
-## Files: 
+### A8: Building a Data Indexer
+
 * ```FileParser```: Responsible for reading in a file, checking for errors, and parse out movies.
 * ```Movie```: A struct holding all the Movie info (id, title, type, genre, etc.)
 * ```MovieIndex```: A hashtable that indexes movies according to specified field. Basically wraps a hashtable with functionality specific to adding/removing/destroying with MovieSets. The key is the description for the document set, and the value is the document set.
@@ -46,7 +44,7 @@ CONFIGURATION & USAGE
 * ```MovieSet```: A set of Movies that are connected somehow: they have the same value for a given field. If the field is Year, all the movies in the set are made in the same year. It consists of a description and a LinkedList of Movies.
 
 
-## To run a single Google test
+### To run a single Google test
 
 Instead of running all the tests at once, you can run just a single test something like this: 
 
@@ -56,9 +54,9 @@ Instead of running all the tests at once, you can run just a single test somethi
 
 Here, only the ```FileParser.CreateMovieFromRow``` test will run.
 
-# A9: Indexing Files to Query
 
-## Files: 
+### A9: Indexing Files to Query
+
 * ```DocIdMap```: A DocIdMap is a Hashtable that maps unique IDs to filenames.
 * ```FileCrawler```: Iterates through a given directory, and for all files it finds, adds them to the provided DocIdMap to assign a unique id.
 * ```DocSet```: A DocSet is a set of documents. doc_index is a hashtable where the key is a doc_id, and the value is a linked list. The payloads in the linked list is a row_id that indicates which row in the specified file has the info about the movie that belongs in this set.
@@ -67,7 +65,8 @@ Here, only the ```FileParser.CreateMovieFromRow``` test will run.
 * ```QueryProcessor```: Responds to queries.
 * ```Main```: Sets up the index and runs a loop for the user to query the index.
 
-## To run a single Google test
+
+### To run a single Google test
 
 Instead of running all the tests at once, you can run just a single test something like this: 
 
@@ -77,7 +76,8 @@ Instead of running all the tests at once, you can run just a single test somethi
 
 Here, only the ```DocIdMap.*``` test will run. 
 
-## To run main program
+
+### To run main program
 
 ```
 ./main dir/
@@ -88,9 +88,9 @@ Example:
 (DON'T FORGET THE TRAILING SLASH)
 ```
 
-# A10: Multi-Threading
 
-## Files: 
+### A10: Multi-Threading
+
 * ```Benchmarker```: builds multiple indexes, using both the single-threaded and multi-threaded approaches.
 * ```DirectoryParser_MT```: builds the multi-threaded version of DirectoryParser.c (from last week).
 * ```main```: basically runs the system (as before).
@@ -98,7 +98,8 @@ Example:
 * ```libA9```: library from our previous assignment 9.
 * ```libHtll```: library for HashTable and LinkedList.
 
-## To run main program
+
+### To run main program
 
 ```
 ./main dir/
@@ -109,7 +110,8 @@ Example:
 (DON'T FORGET THE TRAILING SLASH)
 ```
 
-## To run benchmarker program
+
+### To run benchmarker program
 
 ```
 ./benchmarker dir/
@@ -119,7 +121,6 @@ Example:
 
 (DON'T FORGET THE TRAILING SLASH)
 ```
-
 
 
 MAINTAINERS
