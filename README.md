@@ -1,5 +1,29 @@
 # MOVIE SEARCH ENGINE
 
+CONTENTS OF THIS FILE
+---------------------
+
+ * Introduction
+ * Requirements
+ * Configuration & Usage
+ * Maintainers
+ * Contributing
+
+
+INTRODUCTION
+------------
+
+A Movie search engine with a file crawler, a file processor, an indexer, and a query processor.
+
+
+REQUIREMENTS
+------------
+
+This module requires no modules outside of C.
+
+
+CONFIGURATION & USAGE
+-------------
 
 # Assignment 7: Linked List with Iterator, Google Testing
 
@@ -95,3 +119,19 @@ Example:
 
 (DON'T FORGET THE TRAILING SLASH)
 ```
+
+
+
+MAINTAINERS
+-----------
+
+ * Emiliano Zhu - https://www.linkedin.com/in/emiliano-zhenfang-zhu-587416184/
+
+
+CONTRIBUTING
+-----------
+
+Pull requests are welcome. For major changes, please open an issue first to
+discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
